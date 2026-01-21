@@ -455,9 +455,11 @@ const styles = StyleSheet.create({
 
   cajaOpciones: {
     width: '100%',
+    flex: 1,                 // 🔑 ocupa el espacio restante
     flexDirection: 'row',
     flexWrap: 'wrap',
     justifyContent: 'space-between',
+    alignContent: 'space-between', // 🔑 evita hueco abajo
   },
 
   botonOpcion: {
