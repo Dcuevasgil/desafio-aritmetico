@@ -54,8 +54,7 @@ import {
   Alert,
   Image,
   StatusBar,
-  ActivityIndicator,
-  Platform
+  ActivityIndicator
 } from 'react-native';
 
 import { LinearGradient } from 'expo-linear-gradient';
@@ -398,7 +397,7 @@ export function HomeScreen() {
 /* ─────────── Styles ─────────── */
 
 const styles = StyleSheet.create({
-  container: { flex: 1, padding: 24, minHeight: Platform.OS === 'web' ? '100vh' : undefined, },
+  container: { flex: 1, padding: 24 },
   gradientFondo: { ...StyleSheet.absoluteFillObject },
 
   header: {
@@ -442,7 +441,11 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
 
-  content: { alignItems: 'center' },
+  content: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
 
   question: {
     fontSize: 40,
