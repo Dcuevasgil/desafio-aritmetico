@@ -55,6 +55,7 @@ import {
   Image,
   StatusBar,
   ActivityIndicator,
+  Platform
 } from 'react-native';
 
 import { LinearGradient } from 'expo-linear-gradient';
@@ -397,7 +398,7 @@ export function HomeScreen() {
 /* ─────────── Styles ─────────── */
 
 const styles = StyleSheet.create({
-  container: { flex: 1, padding: 24 },
+  container: { flex: 1, padding: 24, minHeight: Platform.OS === 'web' ? '100vh' : undefined, },
   gradientFondo: { ...StyleSheet.absoluteFillObject },
 
   header: {
