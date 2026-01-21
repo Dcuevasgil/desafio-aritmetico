@@ -84,8 +84,8 @@ El proyecto utiliza variables de entorno para Firebase y Cloudinary.
 Ejemplo de `.env`:
 
 ```env
-CLOUDINARY_CLOUD_NAME=dd6q3zhii
-CLOUDINARY_UPLOAD_PRESET=app_aritmetica
+CLOUDINARY_CLOUD_NAME=xxxx
+CLOUDINARY_UPLOAD_PRESET=xxxx
 
 
 FIREBASE_PROJECT_ID=xxxx
