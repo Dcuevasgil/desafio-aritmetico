@@ -110,6 +110,8 @@ const LEVELS = {
   },
 };
 
+const TAB_BAR_HEIGHT = 64;
+
 /* ─────────── Componente ─────────── */
 
 export function HomeScreen() {
@@ -317,7 +319,7 @@ export function HomeScreen() {
         barStyle={theme.text === '#000000' ? 'dark-content' : 'light-content'}
       />
 
-      <SafeAreaView style={[styles.container, { backgroundColor: theme.background }]}>
+      <SafeAreaView style={[styles.container, { backgroundColor: theme.background, paddingBottom: TAB_BAR_HEIGHT, }]}>
         <LinearGradient
           colors={['#0B66E8', '#0B59D5', '#0A48BC']}
           style={styles.gradientFondo}
