@@ -44,6 +44,7 @@ El proyecto cuenta con **versión web desplegada en Vercel**.
 
 ## 📁 Estructura del proyecto
 
+```bash
 DESAFIO-ARITMETICO/
 ├── .expo/
 ├── .vscode/
@@ -72,6 +73,7 @@ DESAFIO-ARITMETICO/
 ├── package.json
 ├── README.md
 └── serviceAccountKey.json
+```
 
 ---
 
