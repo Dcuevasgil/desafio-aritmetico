@@ -1,0 +1,264 @@
+{
+  "provincias_españolas": [
+    {
+      "nombre_localizacion": "Albacete",
+      "latitud": 38.9943,
+      "longitud": -1.8585
+    },
+    {
+      "nombre_localizacion": "Alicante",
+      "latitud": 38.3452,
+      "longitud": -0.4815
+    },
+    {
+      "nombre_localizacion": "Almería",
+      "latitud": 36.834,
+      "longitud": -2.4637
+    },
+    {
+      "nombre_localizacion": "Asturias",
+      "latitud": 43.3603,
+      "longitud": -5.8448
+    },
+    {
+      "nombre_localizacion": "Álava",
+      "latitud": 42.846,
+      "longitud": -2.6716
+    },
+    {
+      "nombre_localizacion": "Ávila",
+      "latitud": 40.6565,
+      "longitud": -4.6996
+    },
+    {
+      "nombre_localizacion": "Badajoz",
+      "latitud": 38.8783,
+      "longitud": -6.9707
+    },
+    {
+      "nombre_localizacion": "Baleares",
+      "latitud": 39.5696,
+      "longitud": 2.6502
+    },
+    {
+      "nombre_localizacion": "Barcelona",
+      "latitud": 41.3851,
+      "longitud": 2.1734
+    },
+    {
+      "nombre_localizacion": "Burgos",
+      "latitud": 42.3446,
+      "longitud": -3.6969
+    },
+    {
+      "nombre_localizacion": "Cáceres",
+      "latitud": 39.4702,
+      "longitud": -6.3724
+    },
+    {
+      "nombre_localizacion": "Cádiz",
+      "latitud": 36.5167,
+      "longitud": -6.2833
+    },
+    {
+      "nombre_localizacion": "Cantabria",
+      "latitud": 43.4623,
+      "longitud": -3.8094
+    },
+    {
+      "nombre_localizacion": "Castellón",
+      "latitud": 39.9864,
+      "longitud": -0.0513
+    },
+    {
+      "nombre_localizacion": "Ceuta",
+      "latitud": 35.8889,
+      "longitud": -5.3167
+    },
+    {
+      "nombre_localizacion": "Ciudad Real",
+      "latitud": 38.9834,
+      "longitud": -3.9275
+    },
+    {
+      "nombre_localizacion": "Córdoba",
+      "latitud": 37.8882,
+      "longitud": -4.7794
+    },
+    {
+      "nombre_localizacion": "Cuenca",
+      "latitud": 40.0704,
+      "longitud": -2.1374
+    },
+    {
+      "nombre_localizacion": "Gipuzkoa",
+      "latitud": 43.3183,
+      "longitud": -1.9812
+    },
+    {
+      "nombre_localizacion": "Girona",
+      "latitud": 41.9794,
+      "longitud": 2.8214
+    },
+    {
+      "nombre_localizacion": "Granada",
+      "latitud": 37.1773,
+      "longitud": -3.5986
+    },
+    {
+      "nombre_localizacion": "Guadalajara",
+      "latitud": 40.6333,
+      "longitud": -3.1667
+    },
+    {
+      "nombre_localizacion": "Huelva",
+      "latitud": 37.2614,
+      "longitud": -6.9447
+    },
+    {
+      "nombre_localizacion": "Huesca",
+      "latitud": 42.1401,
+      "longitud": -0.4089
+    },
+    {
+      "nombre_localizacion": "Jaén",
+      "latitud": 37.7796,
+      "longitud": -3.7849
+    },
+    {
+      "nombre_localizacion": "La Coruña",
+      "latitud": 43.3623,
+      "longitud": -8.4115
+    },
+    {
+      "nombre_localizacion": "La Rioja",
+      "latitud": 42.4629,
+      "longitud": -2.4443
+    },
+    {
+      "nombre_localizacion": "Las Palmas",
+      "latitud": 28.1235,
+      "longitud": -15.4363
+    },
+    {
+      "nombre_localizacion": "León",
+      "latitud": 42.5987,
+      "longitud": -5.566
+    },
+    {
+      "nombre_localizacion": "Lleida",
+      "latitud": 41.6176,
+      "longitud": 0.62
+    },
+    {
+      "nombre_localizacion": "Lugo",
+      "latitud": 43.01,
+      "longitud": -7.555
+    },
+    {
+      "nombre_localizacion": "Madrid",
+      "latitud": 40.4168,
+      "longitud": -3.7038
+    },
+    {
+      "nombre_localizacion": "Málaga",
+      "latitud": 36.7213,
+      "longitud": -4.4214
+    },
+    {
+      "nombre_localizacion": "Melilla",
+      "latitud": 35.174,
+      "longitud": -2.463
+    },
+    {
+      "nombre_localizacion": "Murcia",
+      "latitud": 37.9922,
+      "longitud": -1.1307
+    },
+    {
+      "nombre_localizacion": "Navarra",
+      "latitud": 42.8125,
+      "longitud": -1.6458
+    },
+    {
+      "nombre_localizacion": "Ourense",
+      "latitud": 42.3364,
+      "longitud": -7.863
+    },
+    {
+      "nombre_localizacion": "Palencia",
+      "latitud": 42.0083,
+      "longitud": -4.5286
+    },
+    {
+      "nombre_localizacion": "Pontevedra",
+      "latitud": 42.4333,
+      "longitud": -8.65
+    },
+    {
+      "nombre_localizacion": "Salamanca",
+      "latitud": 40.9701,
+      "longitud": -5.6635
+    },
+    {
+      "nombre_localizacion": "Santa Cruz de Tenerife",
+      "latitud": 28.4682,
+      "longitud": -16.2546
+    },
+    {
+      "nombre_localizacion": "Segovia",
+      "latitud": 40.9486,
+      "longitud": -4.118
+    },
+    {
+      "nombre_localizacion": "Sevilla",
+      "latitud": 37.3891,
+      "longitud": -5.9845
+    },
+    {
+      "nombre_localizacion": "Soria",
+      "latitud": 41.7636,
+      "longitud": -2.4686
+    },
+    {
+      "nombre_localizacion": "Tarragona",
+      "latitud": 41.1189,
+      "longitud": 1.2445
+    },
+    {
+      "nombre_localizacion": "Teruel",
+      "latitud": 40.3447,
+      "longitud": -1.1064
+    },
+    {
+      "nombre_localizacion": "Toledo",
+      "latitud": 39.8628,
+      "longitud": -4.0273
+    },
+    {
+      "nombre_localizacion": "Valencia",
+      "latitud": 39.4699,
+      "longitud": -0.3763
+    },
+    {
+      "nombre_localizacion": "Valladolid",
+      "latitud": 41.652,
+      "longitud": -4.7286
+    },
+    {
+      "nombre_localizacion": "Vizcaya",
+      "latitud": 43.263,
+      "longitud": -2.935
+    },
+    {
+      "nombre_localizacion": "Zamora",
+      "latitud": 41.5032,
+      "longitud": -5.7448
+    },
+    {
+      "nombre_localizacion": "Zaragoza",
+      "latitud": 41.6488,
+      "longitud": -0.8891
+    }
+  ]
+}

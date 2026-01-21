@@ -1,0 +1,49 @@
+# dependencies
+node_modules/
+
+# Expo
+.expo/
+dist/
+web-build/
+expo-env.d.ts
+
+# Native
+.kotlin/
+*.orig.*
+*.jks
+*.p8
+*.p12
+*.key
+*.mobileprovision
+
+# Metro
+.metro-health-check*
+
+# debug
+npm-debug.*
+yarn-debug.*
+yarn-error.*
+
+# macOS
+.DS_Store
+*.pem
+
+# env
+.env
+.env.*
+.env.local
+.env.*.local
+
+# Firebase Admin
+serviceAccountKey.json
+*-firebase-adminsdk-*.json
+
+# TypeScript
+*.tsbuildinfo
+
+# Editor / IDE (AÑADIDO)
+.vscode/
+.idea/
+
+# OS (extra seguridad)
+Thumbs.db
