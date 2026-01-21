@@ -446,10 +446,7 @@ const styles = StyleSheet.create({
   content: {
     flex: 1,
     alignItems: 'center',
-    justifyContent: 'space-between',
-    maxWidth: 900,
-    alignSelf: 'center',
-    width: '100%',
+    justifyContent: 'flex-start',
   },
 
   question: {
@@ -461,17 +458,14 @@ const styles = StyleSheet.create({
   cajaOpciones: {
     width: '100%',
     maxWidth: 700,
-    marginHorizontal: 'auto',
-    flex: 1,
     flexDirection: 'row',
     flexWrap: 'wrap',
     justifyContent: 'space-between',
-    alignContent: 'space-between',
+    marginTop: 16,
   },
 
   botonOpcion: {
     width: '48%',
-    maxWidth: 300,
     aspectRatio: 1,
     borderRadius: 12,
     backgroundColor: '#FF8C42',
