@@ -437,7 +437,9 @@ export function HomeScreen() {
                 {loadingXP ? (
                   <ActivityIndicator />
                 ) : (
-                  <Text style={styles.numeroExperiencia}>⭐ {xpTotal}</Text>
+                  <Text style={styles.numeroExperiencia}>
+                    ⭐ {Number.isFinite(xpTotal) ? xpTotal : 0}
+                  </Text>
                 )}
               </View>
             </TouchableOpacity>
