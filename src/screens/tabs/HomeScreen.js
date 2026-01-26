@@ -528,16 +528,17 @@ const styles = StyleSheet.create({
 
   cajaOpciones: {
     alignSelf: 'center',
-    width: 500,
+    width: 420,
     flexDirection: 'row',
     flexWrap: 'wrap',
     justifyContent: 'space-between',
+    marginBottom: 20,
   },
 
   botonOpcion: {
     width: '48%',
-    aspectRatio: 1,
-    borderRadius: 12,
+    height: 110,
+    borderRadius: 14,
     backgroundColor: '#FF8C42',
     alignItems: 'center',
     justifyContent: 'center',
@@ -545,7 +546,7 @@ const styles = StyleSheet.create({
   },
 
   textoOpcion: {
-    fontSize: 36,
+    fontSize: 30,
     fontWeight: '700',
     color: '#111827',
   },
@@ -555,8 +556,8 @@ const styles = StyleSheet.create({
   },
 
   feedbackText: {
-    marginTop: 16,
-    fontSize: 16,
+    marginTop: 12,
+    fontSize: 18,
     fontWeight: '600',
   },
 
