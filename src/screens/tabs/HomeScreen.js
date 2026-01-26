@@ -322,6 +322,11 @@ export function HomeScreen() {
     };
 
     let xp = calcularExperiencia(partida);
+
+    // 🔒 BLINDAJE ANTI-NaN (AQUÍ)
+    xp = Number.isFinite(xp) ? xp : 0;
+
+    // límite por nivel
     xp = Math.min(xp, CAPS_POR_NIVEL[nivelN]);
 
     const ref = doc(db, 'perfil', user.uid);
