@@ -301,7 +301,7 @@ export function HomeScreen() {
     finalizarRespuesta(op === question.respuesta);
   };
 
-  const next = async (ok) => {
+  const next = async () => {
     const nivelN = normalizarNivel(nivel);
     const tiempoRondaMax = LEVELS[nivelN].tiempo;
 
@@ -309,12 +309,16 @@ export function HomeScreen() {
     const gastado = Math.max(0, tiempoRondaMax - timeLeft);
     partidaRef.current.totalTime += gastado;
 
+    // ⛔ si aún no hemos terminado, siguiente ronda
     if (partidaRef.current.round < 10) {
       startRound();
       return;
     }
 
-    // fin partida
+    // ✅ PARTIDA FINALIZADA (no más renders de preguntas)
+    clearInterval(timerRef.current);
+    setQuestion(null);
+
     const partida = {
       nivel: nivelN,
       aciertos: partidaRef.current.correct,
@@ -322,63 +326,12 @@ export function HomeScreen() {
       tiempoTotalSegundos: partidaRef.current.totalTime,
     };
 
-    // ✅ XP centralizada (única fuente de verdad)
     const resultadoXP = await actualizarExperienciaUsuario(user.uid, partida);
     const xp = resultadoXP.xp;
 
-    // ─── Estadísticas ───
-    const nivelKey = nivelN;
-    const ref = doc(db, 'perfil', user.uid);
-    const snap = await getDoc(ref);
-    const prev = snap.exists() ? snap.data() : {};
+    // 🔥 refresco inmediato del header
+    setXpTotal((prev) => prev + xp);
 
-    const prevStats = prev.estadisticas?.niveles?.[nivelKey] ?? {
-      partidasJugadas: 0,
-      partidasSinErrores: 0,
-      porcentajeSinErrores: 0,
-      mediaTiemposPartidas: 0,
-      mejorTiempo: 0,
-    };
-
-    const partidasJugadas = prevStats.partidasJugadas + 1;
-    const partidasSinErrores =
-      prevStats.partidasSinErrores + (partida.errores === 0 ? 1 : 0);
-
-    const totalTiempo =
-      prevStats.mediaTiemposPartidas * prevStats.partidasJugadas +
-      partida.tiempoTotalSegundos;
-
-    const mediaTiemposPartidas = Math.round(totalTiempo / partidasJugadas);
-
-    const mejorTiempo =
-      prevStats.mejorTiempo === 0
-        ? partida.tiempoTotalSegundos
-        : Math.min(prevStats.mejorTiempo, partida.tiempoTotalSegundos);
-
-    const porcentajeSinErrores = Math.round(
-      (partidasSinErrores / partidasJugadas) * 100
-    );
-
-    // ✅ Guardar SOLO estadísticas (XP ya está guardada)
-    await setDoc(
-      ref,
-      {
-        estadisticas: {
-          niveles: {
-            [nivelKey]: {
-              partidasJugadas,
-              partidasSinErrores,
-              porcentajeSinErrores,
-              mediaTiemposPartidas,
-              mejorTiempo,
-            },
-          },
-        },
-      },
-      { merge: true }
-    );
-
-    // ─── UI ───
     if (Platform.OS === 'web') {
       setResumenPartida({
         aciertos: partida.aciertos,
@@ -399,6 +352,7 @@ export function HomeScreen() {
       );
     }
   };
+
 
   /* ─────────── Render ─────────── */
 
