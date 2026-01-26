@@ -1,4 +1,4 @@
-import { runTransaction } from 'firebase/firestore';
+import { runTransaction, doc } from 'firebase/firestore';
 import { db } from './firebase';
 
 
@@ -6,36 +6,17 @@ import { db } from './firebase';
 // 🔢 Utilidades de experiencia
 // ==========================
 
-/**
- * Limita un valor entre un mínimo y un máximo.
- * Ejemplo: limitar(120, 0, 100) → 100
- */
 const limitar = (valor, minimo, maximo) =>
   Math.max(minimo, Math.min(maximo, valor));
 
-/**
- * Multiplicadores de XP según dificultad.
- * Se aplican al total calculado para ajustar la progresión.
- */
 const multiplicadoresNivel = {
   Facil: 0.2,
   Intermedio: 0.3,
   Difícil: 0.4,
 };
 
-/**
- * Convierte cualquier valor a número seguro.
- * - Si no es numérico o es NaN / Infinity → devuelve 0
- * - Loggea warning para detectar errores de datos
- */
 function aNumeroSeguro(valor, nombreCampo) {
-  let n;
-
-  if (typeof valor === 'number') {
-    n = valor;
-  } else {
-    n = Number(valor);
-  }
+  let n = typeof valor === 'number' ? valor : Number(valor);
 
   if (!Number.isFinite(n)) {
     console.warn(
@@ -48,109 +29,50 @@ function aNumeroSeguro(valor, nombreCampo) {
   return n;
 }
 
-/**
- * Normaliza el tiempo total de una partida a segundos.
- * Acepta:
- * - number → segundos
- * - string "mm:ss"
- * - string "ss"
- * Cualquier formato inválido devuelve 0.
- */
 function normalizarTiempo(tiempo) {
-  // Ya es número
   if (typeof tiempo === 'number') {
-    if (!Number.isFinite(tiempo)) {
-      console.warn(
-        '⚠️ tiempoTotalSegundos no numérico, usando 0. Valor:',
-        tiempo
-      );
-      return 0;
-    }
+    if (!Number.isFinite(tiempo)) return 0;
     return Math.max(0, tiempo);
   }
 
-  // String tipo "mm:ss"
-  if (typeof tiempo === 'string') {
-    if (tiempo.includes(':')) {
-      const [mmRaw, ssRaw] = tiempo.split(':');
-
-      const mm = aNumeroSeguro(mmRaw, 'tiempoTotalSegundos:minutos');
-      const ss = aNumeroSeguro(ssRaw, 'tiempoTotalSegundos:segundos');
-
-      return Math.max(0, mm * 60 + ss);
-    }
-
-    // String no interpretable
-    console.warn(
-      '⚠️ tiempoTotalSegundos no numérico, usando 0. Valor:',
-      tiempo
-    );
+  if (typeof tiempo === 'string' && tiempo.includes(':')) {
+    const [mmRaw, ssRaw] = tiempo.split(':');
+    const mm = aNumeroSeguro(mmRaw, 'minutos');
+    const ss = aNumeroSeguro(ssRaw, 'segundos');
+    return Math.max(0, mm * 60 + ss);
   }
 
   return 0;
 }
 
 // ==========================
-// 🔢 Calcular experiencia obtenida en una partida
+// 🔢 Calcular experiencia
 // ==========================
 
-/**
- * Calcula la experiencia obtenida en una partida completa.
- *
- * Entrada esperada:
- * {
- *   nivel,
- *   aciertos,
- *   errores,
- *   tiempoTotalSegundos
- * }
- *
- * Devuelve TODOS los datos normalizados + XP final:
- * {
- *   nivel,
- *   aciertos,
- *   errores,
- *   tiempoTotalSegundos,
- *   xp
- * }
- */
 export function calcularExperiencia({
   nivel,
   aciertos,
   errores,
   tiempoTotalSegundos,
 }) {
-  // Normalización de nivel y multiplicador
   const nivelNormalizado = nivel || 'Facil';
-  const multiplicadorBase = multiplicadoresNivel[nivelNormalizado];
-  const multiplicador = Number.isFinite(multiplicadorBase)
-    ? multiplicadorBase
-    : 1;
+  const multiplicador =
+    multiplicadoresNivel[nivelNormalizado] ?? 1;
 
-  // Normalización de valores numéricos
   const aciertosNum = aNumeroSeguro(aciertos, 'aciertos');
   const erroresNum = aNumeroSeguro(errores, 'errores');
   const tiempoSeg = normalizarTiempo(tiempoTotalSegundos);
 
-  // === Cálculo de XP ===
-
-  // XP base por aciertos
   const puntosBase = aciertosNum * 10;
-
-  // Bonus por partida perfecta
   const bonusSinErrores = erroresNum === 0 ? 40 : 0;
-
-  // Penalización por errores
   const penalizacionErrores = erroresNum * 6;
 
-  // Bonus por rapidez (más rápido → más XP)
-  let bonusRapidez = 0;
-  if (tiempoSeg >= 0) {
-    const bruto = 1000 / (tiempoSeg + 1);
-    bonusRapidez = limitar(bruto, 0, 25);
-  }
+  const bonusRapidez = limitar(
+    1000 / (tiempoSeg + 1),
+    0,
+    25
+  );
 
-  // XP total antes de límites
   let xpTotal =
     (puntosBase +
       bonusSinErrores -
@@ -158,19 +80,8 @@ export function calcularExperiencia({
       bonusRapidez) *
     multiplicador;
 
-  // Seguridad ante NaN o Infinity
-  if (!Number.isFinite(xpTotal)) {
-    console.warn('⚠️ xpTotal inválida, forzando a 0', {
-      puntosBase,
-      bonusSinErrores,
-      penalizacionErrores,
-      bonusRapidez,
-      multiplicador,
-    });
-    xpTotal = 0;
-  }
+  if (!Number.isFinite(xpTotal)) xpTotal = 0;
 
-  // Límite final de XP por partida
   const xpFinal = limitar(Math.round(xpTotal), 0, 400);
 
   return {
@@ -183,15 +94,9 @@ export function calcularExperiencia({
 }
 
 // ==========================
-// 🧍 Actualizar experiencia global del usuario
+// 🧍 Actualizar experiencia
 // ==========================
 
-/**
- * Aplica la experiencia de una partida al usuario en Firestore.
- * - Calcula XP
- * - Incrementa el campo experiencia
- * - Devuelve el resumen de la partida
- */
 export async function actualizarExperienciaUsuario(uid, partida) {
   const resultado = calcularExperiencia(partida);
   const { xp } = resultado;
@@ -203,9 +108,7 @@ export async function actualizarExperienciaUsuario(uid, partida) {
     const data = snap.exists() ? snap.data() : {};
 
     const xpActual = Number(data.xpTotal ?? 0);
-    const xpSeguro = Number.isFinite(xpActual) ? xpActual : 0;
-
-    const nuevoTotal = xpSeguro + xp;
+    const nuevoTotal = xpActual + xp;
 
     tx.set(
       perfilRef,
