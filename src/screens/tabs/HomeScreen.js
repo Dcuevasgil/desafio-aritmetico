@@ -321,14 +321,10 @@ export function HomeScreen() {
       tiempoTotalSegundos: partidaRef.current.totalTime,
     };
 
-    const resultadoXP = calcularExperiencia(partida);
-    const xp = resultadoXP.xp;
-
-    // 🔒 BLINDAJE ANTI-NaN (AQUÍ)
-    xp = Number.isFinite(xp) ? xp : 0;
+    const { xp: xpCalculada } = calcularExperiencia(partida);
 
     // límite por nivel
-    xp = Math.min(xp, CAPS_POR_NIVEL[nivelN]);
+    const xp = Math.min(xpCalculada, CAPS_POR_NIVEL[nivelN]);
 
     const ref = doc(db, 'perfil', user.uid);
     const snap = await getDoc(ref);
