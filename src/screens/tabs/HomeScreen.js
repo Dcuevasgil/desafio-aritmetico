@@ -543,16 +543,16 @@ const styles = StyleSheet.create({
 
   botonOpcion: {
     width: '48%',
-    height: 110,
-    borderRadius: 14,
+    height: 130,
+    borderRadius: 16,
     backgroundColor: '#FF8C42',
     alignItems: 'center',
     justifyContent: 'center',
-    marginBottom: 12,
+    marginBottom: 14,
   },
 
   textoOpcion: {
-    fontSize: 30,
+    fontSize: 34,
     fontWeight: '700',
     color: '#111827',
   },
