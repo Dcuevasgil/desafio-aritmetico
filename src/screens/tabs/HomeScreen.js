@@ -533,7 +533,7 @@ const styles = StyleSheet.create({
 
   cajaOpciones: {
     width: '100%',
-    maxWidth: 520,
+    maxWidth: 620,
     alignSelf: 'center',
     flexDirection: 'row',
     flexWrap: 'wrap',
@@ -542,13 +542,12 @@ const styles = StyleSheet.create({
   },
 
   botonOpcion: {
-    width: '48%',
+    width: 240,          // 🔒 fijo (2 columnas perfectas)
     height: 130,
     borderRadius: 16,
     backgroundColor: '#FF8C42',
     alignItems: 'center',
     justifyContent: 'center',
-    marginBottom: 14,
   },
 
   textoOpcion: {
@@ -562,7 +561,7 @@ const styles = StyleSheet.create({
   },
 
   feedbackText: {
-    marginTop: 12,
+    marginTop: 16,
     fontSize: 18,
     fontWeight: '600',
   },
