@@ -532,8 +532,9 @@ const styles = StyleSheet.create({
   },
 
   cajaOpciones: {
+    width: '100%',
+    maxWidth: 520,
     alignSelf: 'center',
-    width: 420,
     flexDirection: 'row',
     flexWrap: 'wrap',
     justifyContent: 'space-between',
