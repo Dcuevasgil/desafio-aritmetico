@@ -331,12 +331,54 @@ export function HomeScreen() {
     const prev = snap.exists() ? snap.data() : {};
     const total = Number(prev.xpTotal ?? 0) + xp;
 
+    const nivelKey = nivelN; // Facil | Intermedio | Difícil
+
+    const prevStats = prev.estadisticas?.niveles?.[nivelKey] ?? {
+      partidasJugadas: 0,
+      partidasSinErrores: 0,
+      porcentajeSinErrores: 0,
+      mediaTiemposPartidas: 0,
+      mejorTiempo: 0,
+    };
+
+    const partidasJugadas = prevStats.partidasJugadas + 1;
+    const partidasSinErrores =
+      prevStats.partidasSinErrores + (partida.errores === 0 ? 1 : 0);
+
+    const totalTiempo =
+      prevStats.mediaTiemposPartidas * prevStats.partidasJugadas +
+      partida.tiempoTotalSegundos;
+
+    const mediaTiemposPartidas = Math.round(
+      totalTiempo / partidasJugadas
+    );
+
+    const mejorTiempo =
+      prevStats.mejorTiempo === 0
+        ? partida.tiempoTotalSegundos
+        : Math.min(prevStats.mejorTiempo, partida.tiempoTotalSegundos);
+
+    const porcentajeSinErrores = Math.round(
+      (partidasSinErrores / partidasJugadas) * 100
+    );
+
     await setDoc(
       ref,
       {
         xpTotal: total,
         experiencia: total,
         lastXP: xp,
+        estadisticas: {
+          niveles: {
+            [nivelKey]: {
+              partidasJugadas,
+              partidasSinErrores,
+              porcentajeSinErrores,
+              mediaTiemposPartidas,
+              mejorTiempo,
+            },
+          },
+        },
       },
       { merge: true }
     );
@@ -460,7 +502,7 @@ export function HomeScreen() {
                   onPress={() => {
                     setMostrarResumen(false);
                     setResumenPartida(null);
-                    setNivel(null); // 🔥 AQUÍ y solo aquí
+                    setNivel(null);
                   }}
                 >
                   <Text style={styles.modalButton}>OK</Text>
