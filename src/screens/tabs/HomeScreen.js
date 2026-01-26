@@ -67,7 +67,7 @@ import { auth, db } from '../../config/firebase';
 import { doc, onSnapshot, setDoc, getDoc } from 'firebase/firestore';
 
 import { useTheme } from '../../context/ContextoTematica';
-import { calcularExperiencia } from '../../config/sistema_xp';
+import { calcularExperiencia, actualizarExperienciaUsuario } from '../../config/sistema_xp';
 
 /* ─────────── Constantes ─────────── */
 
@@ -321,17 +321,15 @@ export function HomeScreen() {
       tiempoTotalSegundos: partidaRef.current.totalTime,
     };
 
-    const { xp: xpCalculada } = calcularExperiencia(partida);
+    // ✅ XP centralizada (única fuente de verdad)
+    const resultadoXP = await actualizarExperienciaUsuario(user.uid, partida);
+    const xp = resultadoXP.xp;
 
-    // límite por nivel
-    const xp = Math.min(xpCalculada, CAPS_POR_NIVEL[nivelN]);
-
+    // ─── Estadísticas ───
+    const nivelKey = nivelN;
     const ref = doc(db, 'perfil', user.uid);
     const snap = await getDoc(ref);
     const prev = snap.exists() ? snap.data() : {};
-    const total = Number(prev.xpTotal ?? 0) + xp;
-
-    const nivelKey = nivelN; // Facil | Intermedio | Difícil
 
     const prevStats = prev.estadisticas?.niveles?.[nivelKey] ?? {
       partidasJugadas: 0,
@@ -349,9 +347,7 @@ export function HomeScreen() {
       prevStats.mediaTiemposPartidas * prevStats.partidasJugadas +
       partida.tiempoTotalSegundos;
 
-    const mediaTiemposPartidas = Math.round(
-      totalTiempo / partidasJugadas
-    );
+    const mediaTiemposPartidas = Math.round(totalTiempo / partidasJugadas);
 
     const mejorTiempo =
       prevStats.mejorTiempo === 0
@@ -362,12 +358,10 @@ export function HomeScreen() {
       (partidasSinErrores / partidasJugadas) * 100
     );
 
+    // ✅ Guardar SOLO estadísticas (XP ya está guardada)
     await setDoc(
       ref,
       {
-        xpTotal: total,
-        experiencia: total,
-        lastXP: xp,
         estadisticas: {
           niveles: {
             [nivelKey]: {
@@ -383,7 +377,7 @@ export function HomeScreen() {
       { merge: true }
     );
 
-
+    // ─── UI ───
     if (Platform.OS === 'web') {
       setResumenPartida({
         aciertos: partida.aciertos,
@@ -396,9 +390,9 @@ export function HomeScreen() {
       Alert.alert(
         'Partida finalizada',
         `Aciertos: ${partida.aciertos}/10
-        Fallos: ${partida.errores}/10
-        Tiempo: ${formatearMMSS(partida.tiempoTotalSegundos)}
-        +${xp} XP`,
+  Fallos: ${partida.errores}/10
+  Tiempo: ${formatearMMSS(partida.tiempoTotalSegundos)}
+  +${xp} XP`,
         [{ text: 'OK', onPress: () => setNivel(null) }],
         { cancelable: false }
       );
