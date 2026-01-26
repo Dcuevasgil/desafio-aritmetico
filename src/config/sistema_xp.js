@@ -16,7 +16,7 @@ const limitar = (valor, minimo, maximo) =>
 const multiplicadoresNivel = {
   Facil: 0.2,
   Intermedio: 0.3,
-  Dificil: 0.4,
+  Difícil: 0.4,
 };
 
 /**
@@ -127,21 +127,6 @@ export function calcularExperiencia({
   const aciertosNum = aNumeroSeguro(aciertos, 'aciertos');
   const erroresNum = aNumeroSeguro(errores, 'errores');
   const tiempoSeg = normalizarTiempo(tiempoTotalSegundos);
-
-  // Log de depuración para trazabilidad
-  console.log('DEBUG XP INPUT', {
-    nivelOriginal: nivel,
-    nivelUsado: nivelNormalizado,
-    multiplicador,
-    aciertosOriginal: aciertos,
-    erroresOriginal: errores,
-    tiempoOriginal: tiempoTotalSegundos,
-    normalizados: {
-      aciertosNum,
-      erroresNum,
-      tiempoSeg,
-    },
-  });
 
   // === Cálculo de XP ===
 
