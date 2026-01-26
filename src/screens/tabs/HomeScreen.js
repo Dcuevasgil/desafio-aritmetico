@@ -55,7 +55,8 @@ import {
   Image,
   StatusBar,
   ActivityIndicator,
-  Platform
+  Platform,
+  Modal
 } from 'react-native';
 
 import { LinearGradient } from 'expo-linear-gradient';
