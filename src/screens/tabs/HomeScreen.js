@@ -321,7 +321,8 @@ export function HomeScreen() {
       tiempoTotalSegundos: partidaRef.current.totalTime,
     };
 
-    let xp = calcularExperiencia(partida);
+    const resultadoXP = calcularExperiencia(partida);
+    const xp = resultadoXP.xp;
 
     // 🔒 BLINDAJE ANTI-NaN (AQUÍ)
     xp = Number.isFinite(xp) ? xp : 0;
