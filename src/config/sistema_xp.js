@@ -1,4 +1,7 @@
 import { runTransaction } from 'firebase/firestore';
+import { db } from './firebase';
+
+
 // ==========================
 // 🔢 Utilidades de experiencia
 // ==========================
