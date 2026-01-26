@@ -139,6 +139,13 @@ export function HomeScreen() {
 
   const timerRef = useRef(null);
   const finalizacion = useRef(false);
+  const partidaRef = useRef({
+    correct: 0,
+    wrong: 0,
+    totalTime: 0,
+    round: 0,
+    lastLevelTime: 0,
+  });
 
   useEffect(() => {
     if (!user) return;
@@ -202,8 +209,28 @@ export function HomeScreen() {
     };
   };
 
+  useEffect(() => {
+    if (!nivel) return;
+
+    const nivelN = normalizarNivel(nivel);
+    partidaRef.current = {
+      correct: 0,
+      wrong: 0,
+      totalTime: 0,
+      round: 0,
+      lastLevelTime: LEVELS[nivelN].tiempo,
+    };
+
+    setScore({ correct: 0, answered: 0 });
+    setRound(0);
+    setRoundTimes([]);
+
+    startRound();
+  }, [nivel]);
+
   const startRound = () => {
     clearInterval(timerRef.current);
+
     const q = generarPregunta();
     setQuestion(q);
     setOpcionesRespuesta(q.opciones);
@@ -211,13 +238,15 @@ export function HomeScreen() {
     setEstadoRespuesta(null);
     setMensajeRespuesta('');
     finalizacion.current = false;
-    setTimeLeft(LEVELS[normalizarNivel(nivel)].tiempo);
-    setRound((r) => r + 1);
-  };
 
-  useEffect(() => {
-    if (nivel) startRound();
-  }, [nivel]);
+    const nivelN = normalizarNivel(nivel);
+    const t = LEVELS[nivelN].tiempo;
+
+    setTimeLeft(t);
+
+    partidaRef.current.round += 1;
+    setRound(partidaRef.current.round);
+  };
 
   useEffect(() => {
     if (round > 0 && round <= 10) {
@@ -230,28 +259,34 @@ export function HomeScreen() {
   }, [round]);
 
   useEffect(() => {
-    if (timeLeft === 0 && round > 0 && round <= 10) {
+    if (
+      timeLeft === 0 &&
+      nivel &&
+      question &&
+      !finalizacion.current
+    ) {
       finalizarRespuesta(false);
     }
-  }, [timeLeft]);
+  }, [timeLeft, nivel, question]);
 
   const finalizarRespuesta = (ok) => {
     if (finalizacion.current) return;
     finalizacion.current = true;
     clearInterval(timerRef.current);
 
-    const nuevoScore = {
-      correct: score.correct + (ok ? 1 : 0),
-      answered: score.answered + 1,
-    };
-    setScore(nuevoScore);
+    if (ok) partidaRef.current.correct += 1;
+    else partidaRef.current.wrong += 1;
+
+    // por si quieres mantenerlo en UI (opcional)
+    setScore({
+      correct: partidaRef.current.correct,
+      answered: partidaRef.current.correct + partidaRef.current.wrong,
+    });
 
     setEstadoRespuesta(ok ? 'ok' : 'ko');
-    setMensajeRespuesta(
-      ok ? '¡Correcto!' : `Respuesta: ${question.respuesta}`
-    );
+    setMensajeRespuesta(ok ? '¡Correcto!' : `Respuesta: ${question.respuesta}`);
 
-    setTimeout(() => next(ok, nuevoScore), round >= 10 ? 0 : 500);
+    setTimeout(() => next(ok), 450);
   };
 
   const elegirOpcion = (op) => {
@@ -260,26 +295,25 @@ export function HomeScreen() {
     finalizarRespuesta(op === question.respuesta);
   };
 
-  const next = async (ok, currentScore) => {
-    const tiempos = [...roundTimes, timeLeft];
-    setRoundTimes(tiempos);
+  const next = async (ok) => {
+    const nivelN = normalizarNivel(nivel);
+    const tiempoRondaMax = LEVELS[nivelN].tiempo;
 
-    if (round < 10) {
+    // tiempo gastado en esta ronda
+    const gastado = Math.max(0, tiempoRondaMax - timeLeft);
+    partidaRef.current.totalTime += gastado;
+
+    if (partidaRef.current.round < 10) {
       startRound();
       return;
     }
 
-    const nivelN = normalizarNivel(nivel);
-    const tiempoTotal = tiempos.reduce(
-      (a, t) => a + (LEVELS[nivelN].tiempo - t),
-      0
-    );
-
+    // fin partida
     const partida = {
       nivel: nivelN,
-      aciertos: currentScore.correct,
-      errores: 10 - currentScore.correct,
-      tiempoTotalSegundos: tiempoTotal,
+      aciertos: partidaRef.current.correct,
+      errores: partidaRef.current.wrong,
+      tiempoTotalSegundos: partidaRef.current.totalTime,
     };
 
     let xp = calcularExperiencia(partida);
@@ -302,7 +336,7 @@ export function HomeScreen() {
 
     Alert.alert(
       'Partida finalizada',
-      `Aciertos: ${currentScore.correct}/10\nTiempo: ${formatearMMSS(tiempoTotal)}\n+${xp} XP`,
+      `Aciertos: ${partida.aciertos}/10\nFallos: ${partida.errores}/10\nTiempo: ${formatearMMSS(partida.tiempoTotalSegundos)}\n+${xp} XP`,
       [{ text: 'OK', onPress: () => setNivel(null) }],
       { cancelable: false }
     );
