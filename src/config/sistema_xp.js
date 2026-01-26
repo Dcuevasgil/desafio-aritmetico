@@ -1,3 +1,4 @@
+import { runTransaction } from 'firebase/firestore';
 // ==========================
 // 🔢 Utilidades de experiencia
 // ==========================
@@ -189,31 +190,30 @@ export function calcularExperiencia({
  * - Devuelve el resumen de la partida
  */
 export async function actualizarExperienciaUsuario(uid, partida) {
-  // Calculamos la experiencia de la partida
   const resultado = calcularExperiencia(partida);
-  const { xp, aciertos, errores, tiempoTotalSegundos, nivel } = resultado;
+  const { xp } = resultado;
 
   const perfilRef = doc(db, 'perfil', uid);
 
-  try {
-    // Incrementa la experiencia global del usuario
-    await setDoc(
+  await runTransaction(db, async (tx) => {
+    const snap = await tx.get(perfilRef);
+    const data = snap.exists() ? snap.data() : {};
+
+    const xpActual = Number(data.xpTotal ?? 0);
+    const xpSeguro = Number.isFinite(xpActual) ? xpActual : 0;
+
+    const nuevoTotal = xpSeguro + xp;
+
+    tx.set(
       perfilRef,
-      { experiencia: increment(xp) },
+      {
+        xpTotal: nuevoTotal,
+        experiencia: nuevoTotal,
+        lastXP: xp,
+      },
       { merge: true }
     );
+  });
 
-    // Log resumen de la partida
-    console.log('🧮 Partida finalizada');
-    console.log(`Nivel: ${nivel}`);
-    console.log(`Aciertos: ${aciertos}`);
-    console.log(`Errores: ${errores}`);
-    console.log(`Tiempo total (segundos): ${tiempoTotalSegundos}`);
-    console.log(`+${xp} XP añadidos al usuario ${uid}`);
-  } catch (error) {
-    console.error('❌ Error al actualizar experiencia:', error);
-  }
-
-  // Útil para pantallas de resumen o animaciones de XP
   return resultado;
 }

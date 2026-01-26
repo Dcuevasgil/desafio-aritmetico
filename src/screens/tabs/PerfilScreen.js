@@ -25,7 +25,6 @@ import { doc, onSnapshot, setDoc, runTransaction } from 'firebase/firestore';
 
 import { useTheme } from '../../context/ContextoTematica';
 import localizaciones from '../../json/localizaciones.json';
-import { generarSugerenciasCreativas } from '../../services/sugerenciasNick';
 
 import { CLOUDINARY_CLOUD_NAME, CLOUDINARY_UPLOAD_PRESET } from '@env';
 
