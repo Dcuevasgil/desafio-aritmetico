@@ -440,7 +440,7 @@ export function HomeScreen() {
           </View>
         )}
 
-        {Platform.OS === 'web' && resumenPartida && (
+        {resumenPartida && (
           <Modal transparent visible={mostrarResumen} animationType="fade">
             <View style={styles.modalOverlay}>
               <View style={styles.modalCard}>
