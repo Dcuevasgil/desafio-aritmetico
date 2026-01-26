@@ -55,8 +55,7 @@ import {
   Image,
   StatusBar,
   ActivityIndicator,
-  Platform,
-  Modal
+  Platform
 } from 'react-native';
 
 import { LinearGradient } from 'expo-linear-gradient';
@@ -440,29 +439,27 @@ export function HomeScreen() {
           </View>
         )}
 
-        {resumenPartida && (
-          <Modal transparent visible={mostrarResumen} animationType="fade">
-            <View style={styles.modalOverlay}>
-              <View style={styles.modalCard}>
-                <Text style={styles.modalTitle}>Partida finalizada</Text>
+        {Platform.OS === 'web' && mostrarResumen && resumenPartida && (
+          <View style={styles.modalOverlay}>
+            <View style={styles.modalCard}>
+              <Text style={styles.modalTitle}>Partida finalizada</Text>
 
-                <Text>Aciertos: {resumenPartida.aciertos}/10</Text>
-                <Text>Fallos: {resumenPartida.errores}/10</Text>
-                <Text>Tiempo: {formatearMMSS(resumenPartida.tiempo)}</Text>
-                <Text>+{resumenPartida.xp} XP</Text>
+              <Text>Aciertos: {resumenPartida.aciertos}/10</Text>
+              <Text>Fallos: {resumenPartida.errores}/10</Text>
+              <Text>Tiempo: {formatearMMSS(resumenPartida.tiempo)}</Text>
+              <Text>+{resumenPartida.xp} XP</Text>
 
-                <TouchableOpacity
-                  onPress={() => {
-                    setMostrarResumen(false);
-                    setResumenPartida(null);
-                    setNivel(null);
-                  }}
-                >
-                  <Text style={styles.modalButton}>OK</Text>
-                </TouchableOpacity>
-              </View>
+              <TouchableOpacity
+                onPress={() => {
+                  setMostrarResumen(false);
+                  setResumenPartida(null);
+                  setNivel(null);
+                }}
+              >
+                <Text style={styles.modalButton}>OK</Text>
+              </TouchableOpacity>
             </View>
-          </Modal>
+          </View>
         )}
       </SafeAreaView>
     </>
