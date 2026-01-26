@@ -304,12 +304,13 @@ export function HomeScreen() {
     const nivelN = normalizarNivel(nivel);
     const tiempoRondaMax = LEVELS[nivelN].tiempo;
 
-    // tiempo gastado en esta ronda
     const gastado = Math.max(0, tiempoRondaMax - timeLeft);
     partidaRef.current.totalTime += gastado;
 
     const answered =
       partidaRef.current.correct + partidaRef.current.wrong;
+
+    console.log('NEXT()', answered);
 
     // ⛔ AÚN QUEDAN PREGUNTAS
     if (answered < 10) {
@@ -320,6 +321,7 @@ export function HomeScreen() {
     // ✅ PARTIDA FINALIZADA
     clearInterval(timerRef.current);
     setQuestion(null);
+    setEstadoRespuesta(null);
 
     const partida = {
       nivel: nivelN,
@@ -328,32 +330,29 @@ export function HomeScreen() {
       tiempoTotalSegundos: partidaRef.current.totalTime,
     };
 
-    const resultadoXP = await actualizarExperienciaUsuario(user.uid, partida);
+    console.log('FIN PARTIDA', partida);
+
+    const resultadoXP = await actualizarExperienciaUsuario(
+      user.uid,
+      partida
+    );
+
+    console.log('XP CALCULADA', resultadoXP);
+
     const xp = resultadoXP.xp;
 
-    // refresco inmediato header
     setXpTotal((prev) => prev + xp);
 
-    if (Platform.OS === 'web') {
-      setResumenPartida({
-        aciertos: partida.aciertos,
-        errores: partida.errores,
-        tiempo: partida.tiempoTotalSegundos,
-        xp,
-      });
-      setMostrarResumen(true);
-    } else {
-      Alert.alert(
-        'Partida finalizada',
-        `Aciertos: ${partida.aciertos}/10
-  Fallos: ${partida.errores}/10
-  Tiempo: ${formatearMMSS(partida.tiempoTotalSegundos)}
-  +${xp} XP`,
-        [{ text: 'OK', onPress: () => setNivel(null) }],
-        { cancelable: false }
-      );
-    }
+    setResumenPartida({
+      aciertos: partida.aciertos,
+      errores: partida.errores,
+      tiempo: partida.tiempoTotalSegundos,
+      xp,
+    });
+
+    setMostrarResumen(true);
   };
+
 
   /* ─────────── Render ─────────── */
 
