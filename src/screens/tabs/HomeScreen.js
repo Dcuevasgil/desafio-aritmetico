@@ -459,7 +459,8 @@ export function HomeScreen() {
                 <TouchableOpacity
                   onPress={() => {
                     setMostrarResumen(false);
-                    setNivel(null);
+                    setResumenPartida(null);
+                    setNivel(null); // 🔥 AQUÍ y solo aquí
                   }}
                 >
                   <Text style={styles.modalButton}>OK</Text>
