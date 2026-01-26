@@ -54,7 +54,7 @@ import {
   Alert,
   Image,
   StatusBar,
-  ActivityIndicator,
+  ActivityIndicator
 } from 'react-native';
 
 import { LinearGradient } from 'expo-linear-gradient';
@@ -109,6 +109,8 @@ const LEVELS = {
     tiempo: 12,
   },
 };
+
+// const TAB_BAR_HEIGHT = 64;
 
 /* ─────────── Componente ─────────── */
 
@@ -475,7 +477,11 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
 
-  content: { alignItems: 'center' },
+  content: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'flex-start',
+  },
 
   question: {
     fontSize: 40,
@@ -485,9 +491,11 @@ const styles = StyleSheet.create({
 
   cajaOpciones: {
     width: '100%',
+    maxWidth: 700,
     flexDirection: 'row',
     flexWrap: 'wrap',
     justifyContent: 'space-between',
+    marginTop: 16,
   },
 
   botonOpcion: {
