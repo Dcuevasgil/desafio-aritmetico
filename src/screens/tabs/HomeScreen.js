@@ -528,7 +528,7 @@ const styles = StyleSheet.create({
 
   cajaOpciones: {
     alignSelf: 'center',
-    width: 360,
+    width: 500,
     flexDirection: 'row',
     flexWrap: 'wrap',
     justifyContent: 'space-between',
