@@ -309,13 +309,16 @@ export function HomeScreen() {
     const gastado = Math.max(0, tiempoRondaMax - timeLeft);
     partidaRef.current.totalTime += gastado;
 
-    // ⛔ si aún no hemos terminado, siguiente ronda
-    if (partidaRef.current.round < 10) {
+    const answered =
+      partidaRef.current.correct + partidaRef.current.wrong;
+
+    // ⛔ AÚN QUEDAN PREGUNTAS
+    if (answered < 10) {
       startRound();
       return;
     }
 
-    // ✅ PARTIDA FINALIZADA (no más renders de preguntas)
+    // ✅ PARTIDA FINALIZADA
     clearInterval(timerRef.current);
     setQuestion(null);
 
@@ -329,7 +332,7 @@ export function HomeScreen() {
     const resultadoXP = await actualizarExperienciaUsuario(user.uid, partida);
     const xp = resultadoXP.xp;
 
-    // 🔥 refresco inmediato del header
+    // refresco inmediato header
     setXpTotal((prev) => prev + xp);
 
     if (Platform.OS === 'web') {
@@ -352,7 +355,6 @@ export function HomeScreen() {
       );
     }
   };
-
 
   /* ─────────── Render ─────────── */
 
