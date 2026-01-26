@@ -165,7 +165,8 @@ export function HomeScreen() {
       setAvatarUri(d.photoURL || null);
       setColorFondo(d.colorFondo || opcionesColorFondo[0]);
 
-      const xp = Number(d.xpTotal ?? d.experiencia ?? 0);
+      // ✅ SOLO leer XP
+      const xp = Number(d.xpTotal ?? 0);
       setXpTotal(xp);
       setLoadingXP(false);
     });
