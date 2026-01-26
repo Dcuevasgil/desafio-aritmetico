@@ -4,9 +4,9 @@
     "slug": "agilidad-arimetica",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./src/assets/imagenes/logo_circular_5.png",
+    "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
-    "newArchEnabled": false,
+    "newArchEnabled": true,
     "splash": {
       "image": "./assets/splash-icon.png",
       "resizeMode": "contain",

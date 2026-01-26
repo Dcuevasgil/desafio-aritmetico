@@ -54,7 +54,8 @@ import {
   Alert,
   Image,
   StatusBar,
-  ActivityIndicator
+  ActivityIndicator,
+  Platform
 } from 'react-native';
 
 import { LinearGradient } from 'expo-linear-gradient';
@@ -110,8 +111,6 @@ const LEVELS = {
   },
 };
 
-// const TAB_BAR_HEIGHT = 64;
-
 /* ─────────── Componente ─────────── */
 
 export function HomeScreen() {
@@ -123,6 +122,9 @@ export function HomeScreen() {
   const [avatarKey, setAvatarKey] = useState('Avatar_1.png');
   const [avatarUri, setAvatarUri] = useState(null);
   const [colorFondo, setColorFondo] = useState(opcionesColorFondo[0]);
+
+  const [mostrarResumen, setMostrarResumen] = useState(false);
+  const [resumenPartida, setResumenPartida] = useState(null);
 
   const [nivel, setNivel] = useState(null);
   const [round, setRound] = useState(0);
@@ -336,12 +338,26 @@ export function HomeScreen() {
       { merge: true }
     );
 
-    Alert.alert(
-      'Partida finalizada',
-      `Aciertos: ${partida.aciertos}/10\nFallos: ${partida.errores}/10\nTiempo: ${formatearMMSS(partida.tiempoTotalSegundos)}\n+${xp} XP`,
-      [{ text: 'OK', onPress: () => setNivel(null) }],
-      { cancelable: false }
-    );
+
+    if (Platform.OS === 'web') {
+      setResumenPartida({
+        aciertos: partida.aciertos,
+        errores: partida.errores,
+        tiempo: partida.tiempoTotalSegundos,
+        xp,
+      });
+      setMostrarResumen(true);
+    } else {
+      Alert.alert(
+        'Partida finalizada',
+        `Aciertos: ${partida.aciertos}/10
+        Fallos: ${partida.errores}/10
+        Tiempo: ${formatearMMSS(partida.tiempoTotalSegundos)}
+        +${xp} XP`,
+        [{ text: 'OK', onPress: () => setNivel(null) }],
+        { cancelable: false }
+      );
+    }
   };
 
   /* ─────────── Render ─────────── */
@@ -425,6 +441,30 @@ export function HomeScreen() {
             )}
           </View>
         )}
+
+        {Platform.OS === 'web' && resumenPartida && (
+          <Modal transparent visible={mostrarResumen} animationType="fade">
+            <View style={styles.modalOverlay}>
+              <View style={styles.modalCard}>
+                <Text style={styles.modalTitle}>Partida finalizada</Text>
+
+                <Text>Aciertos: {resumenPartida.aciertos}/10</Text>
+                <Text>Fallos: {resumenPartida.errores}/10</Text>
+                <Text>Tiempo: {formatearMMSS(resumenPartida.tiempo)}</Text>
+                <Text>+{resumenPartida.xp} XP</Text>
+
+                <TouchableOpacity
+                  onPress={() => {
+                    setMostrarResumen(false);
+                    setNivel(null);
+                  }}
+                >
+                  <Text style={styles.modalButton}>OK</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          </Modal>
+        )}
       </SafeAreaView>
     </>
   );
@@ -477,11 +517,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
 
-  content: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'flex-start',
-  },
+  content: { alignItems: 'center' },
 
   question: {
     fontSize: 40,
@@ -491,11 +527,9 @@ const styles = StyleSheet.create({
 
   cajaOpciones: {
     width: '100%',
-    maxWidth: 700,
     flexDirection: 'row',
     flexWrap: 'wrap',
     justifyContent: 'space-between',
-    marginTop: 16,
   },
 
   botonOpcion: {
@@ -522,5 +556,32 @@ const styles = StyleSheet.create({
     marginTop: 16,
     fontSize: 16,
     fontWeight: '600',
+  },
+
+  /* Modal */
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.5)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+
+  modalCard: {
+    backgroundColor: '#FFF',
+    padding: 24,
+    borderRadius: 12,
+    width: 320,
+    alignItems: 'center',
+  },
+
+  modalTitle: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    marginBottom: 12,
+  },
+
+  modalButton: {
+    marginTop: 16,
+    fontWeight: 'bold',
   },
 });
