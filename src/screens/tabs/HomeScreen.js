@@ -538,7 +538,6 @@ const styles = StyleSheet.create({
     width: '48%',
     aspectRatio: 1,
     maxWidth: 160,
-    maxHeight: 160,
     borderRadius: 12,
     backgroundColor: '#FF8C42',
     alignItems: 'center',
