@@ -332,10 +332,7 @@ export function HomeScreen() {
 
     console.log('FIN PARTIDA', partida);
 
-    const resultadoXP = await actualizarExperienciaUsuario(
-      user.uid,
-      partida
-    );
+    const resultadoXP = await actualizarExperienciaUsuario(user.uid, partida);
 
     console.log('XP CALCULADA', resultadoXP);
 
