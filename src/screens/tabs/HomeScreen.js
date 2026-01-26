@@ -527,8 +527,8 @@ const styles = StyleSheet.create({
   },
 
   cajaOpciones: {
-    width: '100%',
-    maxWidth: 360,
+    alignSelf: 'center',
+    width: 360,
     flexDirection: 'row',
     flexWrap: 'wrap',
     justifyContent: 'space-between',
@@ -537,7 +537,6 @@ const styles = StyleSheet.create({
   botonOpcion: {
     width: '48%',
     aspectRatio: 1,
-    maxWidth: 160,
     borderRadius: 12,
     backgroundColor: '#FF8C42',
     alignItems: 'center',
