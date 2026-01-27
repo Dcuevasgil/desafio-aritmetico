@@ -13,6 +13,8 @@ import { Image } from 'expo-image';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { registrarSoloNick, isValidNick } from '../services/registrarSoloNick';
 
+import { MobileContainer } from '../components/layout/MobileContainer';
+
 const logo = require('../assets/imagenes/logo_circular_5.png');
 
 export function RegisterScreen() {
@@ -52,7 +54,7 @@ export function RegisterScreen() {
       style={styles.contenedorRegistro}
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}
     >
-      <View style={styles.cabecera}>
+      <MobileContainer>
         <Image
           source={logo}
           style={styles.logo}
@@ -62,35 +64,36 @@ export function RegisterScreen() {
           placeholder="LKO2?U%2Tw=w]~RBVZRi"
           transition={200}
         />
+
         <Text style={styles.title}>Desafío Aritmético</Text>
         <Text style={styles.slogan}>¡Entrena tu agilidad mental!</Text>
-      </View>
 
-      {!!errorMessage && (
-        <Text style={styles.errorText}>{errorMessage}</Text>
-      )}
+        {!!errorMessage && (
+          <Text style={styles.errorText}>{errorMessage}</Text>
+        )}
 
-      <View style={styles.formulario}>
-        <TextInput
-          placeholder="Pon tu nick"
-          placeholderTextColor="#9CA3AF"
-          autoCapitalize="none"
-          autoCorrect={false}
-          style={styles.input}
-          value={nick}
-          onChangeText={(t) => {
-            setNick(t);
-            setErrorMessage('');
-          }}
-          maxLength={20}
-          returnKeyType="done"
-          onSubmitEditing={handleRegister}
-        />
+        <View style={styles.formulario}>
+          <TextInput
+            placeholder="Pon tu nick"
+            placeholderTextColor="#9CA3AF"
+            autoCapitalize="none"
+            autoCorrect={false}
+            style={styles.input}
+            value={nick}
+            onChangeText={(t) => {
+              setNick(t);
+              setErrorMessage('');
+            }}
+            maxLength={20}
+            returnKeyType="done"
+            onSubmitEditing={handleRegister}
+          />
 
-        <TouchableOpacity style={styles.button} onPress={handleRegister}>
-          <Text style={styles.buttonText}>Regístrate</Text>
-        </TouchableOpacity>
-      </View>
+          <TouchableOpacity style={styles.button} onPress={handleRegister}>
+            <Text style={styles.buttonText}>Regístrate</Text>
+          </TouchableOpacity>
+        </View>
+      </MobileContainer>
     </KeyboardAvoidingView>
   );
 }
@@ -99,13 +102,16 @@ const styles = StyleSheet.create({
   contenedorRegistro: {
     flex: 1,
     backgroundColor: '#1E3A8A',
+    alignItems: Platform.OS === 'web' ? 'center' : 'stretch',
   },
 
-  cabecera: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingVertical: 30,
-    marginTop: 80,
+  mobileContainer: {
+    flex: 1,
+    width: '100%',
+    maxWidth: 420,
+    alignSelf: 'center',
+    paddingHorizontal: 24,
+    paddingTop: 80,
   },
 
   logo: {

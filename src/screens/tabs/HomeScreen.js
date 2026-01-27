@@ -51,7 +51,6 @@ import {
   Text,
   TouchableOpacity,
   StyleSheet,
-  Alert,
   Image,
   StatusBar,
   ActivityIndicator,
@@ -63,10 +62,12 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 
 import { auth, db } from '../../config/firebase';
-import { doc, onSnapshot, setDoc, getDoc } from 'firebase/firestore';
+import { doc, onSnapshot } from 'firebase/firestore';
 
 import { useTheme } from '../../context/ContextoTematica';
-import { calcularExperiencia, actualizarExperienciaUsuario } from '../../config/sistema_xp';
+import { MobileContainer } from '../../components/layout/MobileContainer';
+
+import { actualizarExperienciaUsuario } from '../../config/sistema_xp';
 
 /* ─────────── Constantes ─────────── */
 
@@ -301,53 +302,49 @@ export function HomeScreen() {
   };
 
   const next = async () => {
-    const nivelN = normalizarNivel(nivel);
-    const tiempoRondaMax = LEVELS[nivelN].tiempo;
+    try {
+      const nivelN = normalizarNivel(nivel);
+      const tiempoRondaMax = LEVELS[nivelN].tiempo;
 
-    const gastado = Math.max(0, tiempoRondaMax - timeLeft);
-    partidaRef.current.totalTime += gastado;
+      const gastado = Math.max(0, tiempoRondaMax - timeLeft);
+      partidaRef.current.totalTime += gastado;
 
-    const answered =
-      partidaRef.current.correct + partidaRef.current.wrong;
+      const answered =
+        partidaRef.current.correct + partidaRef.current.wrong;
 
-    console.log('NEXT()', answered);
+      if (answered < 10) {
+        startRound();
+        return;
+      }
 
-    // ⛔ AÚN QUEDAN PREGUNTAS
-    if (answered < 10) {
-      startRound();
-      return;
+      clearInterval(timerRef.current);
+      setQuestion(null);
+      setEstadoRespuesta(null);
+
+      const partida = {
+        nivel: nivelN,
+        aciertos: partidaRef.current.correct,
+        errores: partidaRef.current.wrong,
+        tiempoTotalSegundos: partidaRef.current.totalTime,
+      };
+
+      const resultadoXP = await actualizarExperienciaUsuario(user.uid, partida);
+      const xp = resultadoXP.xp;
+
+      setXpTotal((prev) => prev + xp);
+
+      setResumenPartida({
+        aciertos: partida.aciertos,
+        errores: partida.errores,
+        tiempo: partida.tiempoTotalSegundos,
+        xp,
+      });
+
+      setMostrarResumen(true);
+    } catch (err) {
+      console.error('❌ Error al finalizar partida:', err);
+      alert('Error al guardar la partida');
     }
-
-    // ✅ PARTIDA FINALIZADA
-    clearInterval(timerRef.current);
-    setQuestion(null);
-    setEstadoRespuesta(null);
-
-    const partida = {
-      nivel: nivelN,
-      aciertos: partidaRef.current.correct,
-      errores: partidaRef.current.wrong,
-      tiempoTotalSegundos: partidaRef.current.totalTime,
-    };
-
-    console.log('FIN PARTIDA', partida);
-
-    const resultadoXP = await actualizarExperienciaUsuario(user.uid, partida);
-
-    console.log('XP CALCULADA', resultadoXP);
-
-    const xp = resultadoXP.xp;
-
-    setXpTotal((prev) => prev + xp);
-
-    setResumenPartida({
-      aciertos: partida.aciertos,
-      errores: partida.errores,
-      tiempo: partida.tiempoTotalSegundos,
-      xp,
-    });
-
-    setMostrarResumen(true);
   };
 
 
@@ -366,73 +363,148 @@ export function HomeScreen() {
           style={styles.gradientFondo}
         />
 
-        {!nivel && (
-          <>
-            <TouchableOpacity
-              style={styles.header}
-              onPress={() => navigation.navigate('Perfil')}
-            >
-              <Image
-                source={avatarUri ? { uri: avatarUri } : opcionesAvatar[avatarKey]}
-                style={[styles.avatar, { backgroundColor: colorFondo }]}
-              />
-              <Text style={[styles.nick, { color: theme.text }]}>
-                {displayName}
-              </Text>
-              <View style={styles.experienciaUsuario}>
-                {loadingXP ? (
-                  <ActivityIndicator />
-                ) : (
-                  <Text style={styles.numeroExperiencia}>
-                    ⭐ {Number.isFinite(xpTotal) ? xpTotal : 0}
+        {Platform.OS === 'web' ? (
+          <MobileContainer>
+            {!nivel && (
+              <>
+                <TouchableOpacity
+                  style={styles.header}
+                  onPress={() => navigation.navigate('Perfil')}
+                >
+                  <Image
+                    source={avatarUri ? { uri: avatarUri } : opcionesAvatar[avatarKey]}
+                    style={[styles.avatar, { backgroundColor: colorFondo }]}
+                  />
+                  <Text style={[styles.nick, { color: theme.text }]}>
+                    {displayName}
                   </Text>
+                  <View style={styles.experienciaUsuario}>
+                    {loadingXP ? (
+                      <ActivityIndicator />
+                    ) : (
+                      <Text style={styles.numeroExperiencia}>
+                        ⭐ {Number.isFinite(xpTotal) ? xpTotal : 0}
+                      </Text>
+                    )}
+                  </View>
+                </TouchableOpacity>
+
+                <Image source={logo} style={styles.logo} />
+                <Text style={[styles.title, { color: theme.text }]}>
+                  Desafío Aritmético
+                </Text>
+
+                {Object.keys(LEVELS).map((lv) => (
+                  <TouchableOpacity key={lv} onPress={() => setNivel(lv)}>
+                    <LinearGradient
+                      colors={['#FFA142', '#FF6C22']}
+                      style={styles.levelButton}
+                    >
+                      <Text style={styles.levelText}>{lv}</Text>
+                    </LinearGradient>
+                  </TouchableOpacity>
+                ))}
+              </>
+            )}
+
+            {nivel && question && (
+              <View style={styles.content}>
+                <Text style={styles.question}>
+                  {question.a} {question.operacion} {question.b} = ?
+                </Text>
+
+                <View style={styles.cajaOpciones}>
+                  {opcionesRespuesta.map((op, i) => (
+                    <TouchableOpacity
+                      key={i}
+                      style={[
+                        styles.botonOpcion,
+                        opcionSeleccionada === op && styles.opcionSeleccionada,
+                      ]}
+                      onPress={() => elegirOpcion(op)}
+                    >
+                      <Text style={styles.textoOpcion}>{op}</Text>
+                    </TouchableOpacity>
+                  ))}
+                </View>
+
+                {estadoRespuesta && (
+                  <Text style={styles.feedbackText}>{mensajeRespuesta}</Text>
                 )}
               </View>
-            </TouchableOpacity>
-
-            <Image source={logo} style={styles.logo} />
-            <Text style={[styles.title, { color: theme.text }]}>
-              Desafío Aritmético
-            </Text>
-
-            {Object.keys(LEVELS).map((lv) => (
-              <TouchableOpacity key={lv} onPress={() => setNivel(lv)}>
-                <LinearGradient
-                  colors={['#FFA142', '#FF6C22']}
-                  style={styles.levelButton}
-                >
-                  <Text style={styles.levelText}>{lv}</Text>
-                </LinearGradient>
-              </TouchableOpacity>
-            ))}
-          </>
-        )}
-
-        {nivel && question && (
-          <View style={styles.content}>
-            <Text style={styles.question}>
-              {question.a} {question.operacion} {question.b} = ?
-            </Text>
-
-            <View style={styles.cajaOpciones}>
-              {opcionesRespuesta.map((op, i) => (
-                <TouchableOpacity
-                  key={i}
-                  style={[
-                    styles.botonOpcion,
-                    opcionSeleccionada === op && styles.opcionSeleccionada,
-                  ]}
-                  onPress={() => elegirOpcion(op)}
-                >
-                  <Text style={styles.textoOpcion}>{op}</Text>
-                </TouchableOpacity>
-              ))}
-            </View>
-
-            {estadoRespuesta && (
-              <Text style={styles.feedbackText}>{mensajeRespuesta}</Text>
             )}
-          </View>
+          </MobileContainer>
+        ) : (
+          <>
+            {!nivel && (
+              <>
+                <TouchableOpacity
+                  style={styles.header}
+                  onPress={() => navigation.navigate('Perfil')}
+                >
+                  <Image
+                    source={avatarUri ? { uri: avatarUri } : opcionesAvatar[avatarKey]}
+                    style={[styles.avatar, { backgroundColor: colorFondo }]}
+                  />
+                  <Text style={[styles.nick, { color: theme.text }]}>
+                    {displayName}
+                  </Text>
+                  <View style={styles.experienciaUsuario}>
+                    {loadingXP ? (
+                      <ActivityIndicator />
+                    ) : (
+                      <Text style={styles.numeroExperiencia}>
+                        ⭐ {Number.isFinite(xpTotal) ? xpTotal : 0}
+                      </Text>
+                    )}
+                  </View>
+                </TouchableOpacity>
+
+                <Image source={logo} style={styles.logo} />
+                <Text style={[styles.title, { color: theme.text }]}>
+                  Desafío Aritmético
+                </Text>
+
+                {Object.keys(LEVELS).map((lv) => (
+                  <TouchableOpacity key={lv} onPress={() => setNivel(lv)}>
+                    <LinearGradient
+                      colors={['#FFA142', '#FF6C22']}
+                      style={styles.levelButton}
+                    >
+                      <Text style={styles.levelText}>{lv}</Text>
+                    </LinearGradient>
+                  </TouchableOpacity>
+                ))}
+              </>
+            )}
+
+            {nivel && question && (
+              <View style={styles.content}>
+                <Text style={styles.question}>
+                  {question.a} {question.operacion} {question.b} = ?
+                </Text>
+
+                <View style={styles.cajaOpciones}>
+                  {opcionesRespuesta.map((op, i) => (
+                    <TouchableOpacity
+                      key={i}
+                      style={[
+                        styles.botonOpcion,
+                        opcionSeleccionada === op && styles.opcionSeleccionada,
+                      ]}
+                      onPress={() => elegirOpcion(op)}
+                    >
+                      <Text style={styles.textoOpcion}>{op}</Text>
+                    </TouchableOpacity>
+                  ))}
+                </View>
+
+                {estadoRespuesta && (
+                  <Text style={styles.feedbackText}>{mensajeRespuesta}</Text>
+                )}
+              </View>
+            )}
+          </>
         )}
 
         {Platform.OS === 'web' && mostrarResumen && resumenPartida && (
@@ -465,7 +537,10 @@ export function HomeScreen() {
 /* ─────────── Styles ─────────── */
 
 const styles = StyleSheet.create({
-  container: { flex: 1, padding: 24 },
+  container: {
+    flex: 1,
+    padding: Platform.OS === 'web' ? 0 : 24,
+  },
   gradientFondo: { ...StyleSheet.absoluteFillObject },
 
   header: {

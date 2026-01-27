@@ -12,6 +12,7 @@ import {
   Alert,
   Keyboard,
   Pressable,
+  Platform
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -22,6 +23,8 @@ import { useNavigation } from '@react-navigation/native';
 import { auth, db } from '../../config/firebase';
 import { updateProfile } from 'firebase/auth';
 import { doc, onSnapshot, setDoc, runTransaction } from 'firebase/firestore';
+
+import { MobileContainer } from '../../components/layout/MobileContainer';
 
 import { useTheme } from '../../context/ContextoTematica';
 import localizaciones from '../../json/localizaciones.json';
@@ -277,74 +280,162 @@ export function PerfilScreen() {
       />
 
       <SafeAreaView style={[styles.contenedor, { backgroundColor: theme.background }]}>
-        <LinearGradient
-          colors={['#0B66E8', '#0B59D5', '#0A48BC']}
-          style={styles.gradientFondo}
-        />
+  <LinearGradient
+    colors={['#0B66E8', '#0B59D5', '#0A48BC']}
+    style={styles.gradientFondo}
+  />
 
-        <View style={styles.cabecera}>
-          <View style={[styles.avatarContainer, { backgroundColor: colorFondo }]}>
-            <Image
-              source={avatarUri ? { uri: avatarUri } : avatarStatic}
-              style={styles.avatar}
-            />
-          </View>
-
-          <View style={styles.infoUsuario}>
-            <Text style={[styles.nick, { color: theme.text }]}>{nickName}</Text>
-            <Text style={[styles.parrafo, { color: theme.text }]}>{ubicacion}</Text>
-          </View>
-
-          <TouchableOpacity
-            style={styles.botonEditarPerfilContainer}
-            onPress={() => setModalVisible(true)}
-          >
-            <Text style={styles.botonEditarPerfilTexto}>Perfil</Text>
-          </TouchableOpacity>
+  {Platform.OS === 'web' ? (
+    <MobileContainer>
+      {/* CABECERA */}
+      <View style={styles.cabecera}>
+        <View style={[styles.avatarContainer, { backgroundColor: colorFondo }]}>
+          <Image
+            source={avatarUri ? { uri: avatarUri } : avatarStatic}
+            style={styles.avatar}
+          />
         </View>
 
-        <View style={[styles.estadisticasContenedor, { backgroundColor: '#1C2B4A' }]}>
-          <Text style={[styles.seccionTitulo, { color: theme.text }]}>Estadísticas</Text>
+        <View style={styles.infoUsuario}>
+          <Text style={[styles.nick, { color: theme.text }]}>{nickName}</Text>
+          <Text style={[styles.parrafo, { color: theme.text }]}>{ubicacion}</Text>
+        </View>
 
-          <View style={styles.nivelesDisponibles}>
-            {NIVELES.map((n) => (
-              <Pressable key={n} onPress={() => setNivel(n)}>
-                <Text style={[styles.tituloDificultad, nivel === n && { opacity: 1 }]}>
-                  {n.toUpperCase()}
-                </Text>
-              </Pressable>
-            ))}
-          </View>
+        <TouchableOpacity
+          style={styles.botonEditarPerfilContainer}
+          onPress={() => setModalVisible(true)}
+        >
+          <Text style={styles.botonEditarPerfilTexto}>Perfil</Text>
+        </TouchableOpacity>
+      </View>
 
-          <View style={styles.tablaEstadisticas}>
-            <Text style={styles.celdaLabel}>
-              Partidas jugadas: {estadisticas.partidasJugadas}
-            </Text>
-            <Text style={styles.celdaLabel}>
-              Sin errores: {estadisticas.partidasSinErrores}
-            </Text>
-            <Text style={styles.celdaLabel}>
-              Porcentaje: {estadisticas.porcentajeSinErrores}%
-            </Text>
-            <Text style={styles.celdaLabel}>
-              Tiempo medio: {formatearMMSS(estadisticas.mediaTiemposPartidas)}
-            </Text>
-            <Text style={styles.celdaLabel}>
-              Mejor tiempo: {formatearMMSS(estadisticas.mejorTiempo)}
-            </Text>
-          </View>
+      {/* ESTADÍSTICAS */}
+      <View style={[styles.estadisticasContenedor, { backgroundColor: '#1C2B4A' }]}>
+        <Text style={[styles.seccionTitulo, { color: theme.text }]}>
+          Estadísticas
+        </Text>
 
-          <TouchableOpacity onPress={() => reseteoEstadisticas(nivel)}>
-            <LinearGradient
-              colors={['#FF9C52', '#FF6C22']}
-              style={styles.reinicioEstadisticas}
-            >
-              <Text style={styles.textoReinicioEstadisticas}>
-                Reiniciar estadísticas
+        <View style={styles.nivelesDisponibles}>
+          {NIVELES.map((n) => (
+            <Pressable key={n} onPress={() => setNivel(n)}>
+              <Text
+                style={[
+                  styles.tituloDificultad,
+                  nivel === n && { opacity: 1 },
+                ]}
+              >
+                {n.toUpperCase()}
               </Text>
-            </LinearGradient>
-          </TouchableOpacity>
+            </Pressable>
+          ))}
         </View>
+
+        <View style={styles.tablaEstadisticas}>
+          <Text style={styles.celdaLabel}>
+            Partidas jugadas: {estadisticas.partidasJugadas}
+          </Text>
+          <Text style={styles.celdaLabel}>
+            Sin errores: {estadisticas.partidasSinErrores}
+          </Text>
+          <Text style={styles.celdaLabel}>
+            Porcentaje: {estadisticas.porcentajeSinErrores}%
+          </Text>
+          <Text style={styles.celdaLabel}>
+            Tiempo medio: {formatearMMSS(estadisticas.mediaTiemposPartidas)}
+          </Text>
+          <Text style={styles.celdaLabel}>
+            Mejor tiempo: {formatearMMSS(estadisticas.mejorTiempo)}
+          </Text>
+        </View>
+
+        <TouchableOpacity onPress={() => reseteoEstadisticas(nivel)}>
+          <LinearGradient
+            colors={['#FF9C52', '#FF6C22']}
+            style={styles.reinicioEstadisticas}
+          >
+            <Text style={styles.textoReinicioEstadisticas}>
+              Reiniciar estadísticas
+            </Text>
+          </LinearGradient>
+        </TouchableOpacity>
+      </View>
+    </MobileContainer>
+  ) : (
+    <>
+      {/* === MISMO CONTENIDO EN MÓVIL (sin MobileContainer) === */}
+
+      <View style={styles.cabecera}>
+        <View style={[styles.avatarContainer, { backgroundColor: colorFondo }]}>
+          <Image
+            source={avatarUri ? { uri: avatarUri } : avatarStatic}
+            style={styles.avatar}
+          />
+        </View>
+
+        <View style={styles.infoUsuario}>
+          <Text style={[styles.nick, { color: theme.text }]}>{nickName}</Text>
+          <Text style={[styles.parrafo, { color: theme.text }]}>{ubicacion}</Text>
+        </View>
+
+        <TouchableOpacity
+          style={styles.botonEditarPerfilContainer}
+          onPress={() => setModalVisible(true)}
+        >
+          <Text style={styles.botonEditarPerfilTexto}>Perfil</Text>
+        </TouchableOpacity>
+      </View>
+
+      <View style={[styles.estadisticasContenedor, { backgroundColor: '#1C2B4A' }]}>
+        <Text style={[styles.seccionTitulo, { color: theme.text }]}>
+          Estadísticas
+        </Text>
+
+        <View style={styles.nivelesDisponibles}>
+          {NIVELES.map((n) => (
+            <Pressable key={n} onPress={() => setNivel(n)}>
+              <Text
+                style={[
+                  styles.tituloDificultad,
+                  nivel === n && { opacity: 1 },
+                ]}
+              >
+                {n.toUpperCase()}
+              </Text>
+            </Pressable>
+          ))}
+        </View>
+
+        <View style={styles.tablaEstadisticas}>
+          <Text style={styles.celdaLabel}>
+            Partidas jugadas: {estadisticas.partidasJugadas}
+          </Text>
+          <Text style={styles.celdaLabel}>
+            Sin errores: {estadisticas.partidasSinErrores}
+          </Text>
+          <Text style={styles.celdaLabel}>
+            Porcentaje: {estadisticas.porcentajeSinErrores}%
+          </Text>
+          <Text style={styles.celdaLabel}>
+            Tiempo medio: {formatearMMSS(estadisticas.mediaTiemposPartidas)}
+          </Text>
+          <Text style={styles.celdaLabel}>
+            Mejor tiempo: {formatearMMSS(estadisticas.mejorTiempo)}
+          </Text>
+        </View>
+
+        <TouchableOpacity onPress={() => reseteoEstadisticas(nivel)}>
+          <LinearGradient
+            colors={['#FF9C52', '#FF6C22']}
+            style={styles.reinicioEstadisticas}
+          >
+            <Text style={styles.textoReinicioEstadisticas}>
+              Reiniciar estadísticas
+            </Text>
+          </LinearGradient>
+        </TouchableOpacity>
+      </View>
+    </>
+  )}
 
         {/* Modal edición */}
         <Modal visible={modalVisible} transparent animationType="slide">
@@ -393,6 +484,7 @@ const styles = StyleSheet.create({
   cabecera: {
     flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: Platform.OS === 'web' ? 'space-between' : 'flex-start',
     padding: 16,
     marginTop: 30,
   },
@@ -417,7 +509,7 @@ const styles = StyleSheet.create({
   botonEditarPerfilTexto: { color: '#FFF', fontWeight: 'bold' },
   estadisticasContenedor: {
     marginTop: 40,
-    marginHorizontal: 16,
+    marginHorizontal: Platform.OS === 'web' ? 0 : 16,
     borderRadius: 12,
     padding: 16,
   },
