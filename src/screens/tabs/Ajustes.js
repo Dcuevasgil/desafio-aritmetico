@@ -6,162 +6,78 @@ import {
   StatusBar,
   TouchableOpacity,
 } from 'react-native';
-
 import { LinearGradient } from 'expo-linear-gradient';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
-
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { signOut } from 'firebase/auth';
 import { auth } from '../../config/firebase';
-
 import { useTheme } from '../../context/ContextoTematica';
-
-import { SwitchModoOscuro } from '../../components/switches/SwitchModoOscuro';
-import { SwitchNotificaciones } from '../../components/switches/SwitchNotificaciones';
 
 export function Ajustes() {
   const navigation = useNavigation();
   const { theme } = useTheme();
 
-  const handleLogout = async () => {
-    try {
-      await signOut(auth);
-      await AsyncStorage.removeItem('@nick');
-    } catch (error) {
-      console.error('Error al cerrar sesión:', error);
-    }
+  const logout = async () => {
+    await signOut(auth);
+    await AsyncStorage.removeItem('@nick');
   };
 
   return (
     <>
-      <StatusBar
-        backgroundColor={theme.headerBg}
-        barStyle={theme.text === '#000000' ? 'dark-content' : 'light-content'}
-      />
-
-      <SafeAreaView
-        style={[styles.contenedor, { backgroundColor: theme.headerBg }]}
-      >
+      <StatusBar barStyle="light-content" />
+      <SafeAreaView style={styles.contenedor}>
         <LinearGradient
           colors={['#0B66E8', '#0B59D5', '#0A48BC']}
-          style={styles.gradientFondo}
-          pointerEvents="none"
+          style={StyleSheet.absoluteFillObject}
         />
 
-        <View style={styles.cabecera}>
-          <Ionicons
-            name="chevron-back-outline"
-            size={30}
-            color={theme.text}
-            style={styles.icono}
-            onPress={() => navigation.goBack()}
-          />
-          <Text style={[styles.titulo, { color: theme.text }]}>
-            Configuración
-          </Text>
+        <View style={styles.pantalla}>
+          <View style={styles.header}>
+            <Ionicons
+              name="chevron-back-outline"
+              size={28}
+              color="#FFF"
+              onPress={() => navigation.goBack()}
+            />
+            <Text style={styles.title}>Configuración</Text>
+          </View>
+
+          <TouchableOpacity style={styles.btn}>
+            <Text style={styles.btnText}>Ayuda</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity style={styles.btn}>
+            <Text style={styles.btnText}>Privacidad</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity style={[styles.btn, styles.logout]} onPress={logout}>
+            <Text style={styles.btnText}>Cerrar sesión</Text>
+          </TouchableOpacity>
         </View>
-
-        <View
-          style={[
-            styles.configuraciones,
-            { backgroundColor: theme.sectionBg },
-          ]}
-        >
-          <SwitchModoOscuro label="Modo oscuro" />
-          <SwitchNotificaciones label="Notificaciones" />
-        </View>
-
-        <TouchableOpacity style={styles.accionBtn}>
-          <Text style={styles.accionText}>Ayuda</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity style={styles.accionBtn}>
-          <Text style={styles.accionText}>Privacidad</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity style={styles.accionBtn}>
-          <Text style={styles.accionText}>Términos y condiciones</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity style={styles.logoutBtn} onPress={handleLogout}>
-          <Text style={styles.logoutText}>Cerrar sesión</Text>
-        </TouchableOpacity>
       </SafeAreaView>
     </>
   );
 }
 
 const styles = StyleSheet.create({
-  contenedor: {
-    flex: 1,
-  },
-
-  gradientFondo: {
-    ...StyleSheet.absoluteFillObject,
-  },
-
-  cabecera: {
+  contenedor: { flex: 1 },
+  pantalla: {
     width: '100%',
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingHorizontal: 16,
-    paddingBottom: 8,
-    marginTop: 16,
+    maxWidth: 390,
+    alignSelf: 'center',
+    padding: 16,
   },
-
-  icono: {
-    position: 'absolute',
-    left: 16,
-  },
-
-  titulo: {
-    fontSize: 18,
-    fontWeight: 'bold',
-  },
-
-  configuraciones: {
-    marginTop: 30,
+  header: { flexDirection: 'row', alignItems: 'center', marginBottom: 24 },
+  title: { color: '#FFF', fontSize: 18, marginLeft: 12 },
+  btn: {
     width: '100%',
-    paddingHorizontal: 24,
-    paddingVertical: 16,
-    borderRadius: 8,
-    gap: 12,
-    alignItems: 'center',
-  },
-
-  accionBtn: {
-    marginTop: 16,
     backgroundColor: '#3B82F6',
-    paddingVertical: 12,
-    paddingHorizontal: 24,
+    padding: 14,
     borderRadius: 8,
-    marginHorizontal: 24,
+    marginBottom: 12,
   },
-
-  accionText: {
-    color: '#FFF',
-    fontSize: 16,
-    fontWeight: '600',
-    textAlign: 'center',
-  },
-
-  logoutBtn: {
-    marginTop: 30,
-    backgroundColor: '#EF4444',
-    paddingVertical: 12,
-    paddingHorizontal: 24,
-    borderRadius: 8,
-    marginHorizontal: 24,
-    marginBottom: 24,
-  },
-
-  logoutText: {
-    color: '#FFF',
-    fontSize: 16,
-    fontWeight: '600',
-    textAlign: 'center',
-  },
+  logout: { backgroundColor: '#EF4444' },
+  btnText: { color: '#FFF', textAlign: 'center', fontWeight: '600' },
 });

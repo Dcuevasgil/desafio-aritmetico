@@ -282,79 +282,81 @@ export function PerfilScreen() {
           style={styles.gradientFondo}
         />
 
-        {/* CABECERA */}
-        <View style={styles.cabecera}>
-          <View style={[styles.avatarContainer, { backgroundColor: colorFondo }]}>
-            <Image
-              source={avatarUri ? { uri: avatarUri } : avatarStatic}
-              style={styles.avatar}
-            />
-          </View>
+        <View style={styles.pantalla}>
+          {/* CABECERA */}
+          <View style={styles.cabecera}>
+            <View style={[styles.avatarContainer, { backgroundColor: colorFondo }]}>
+              <Image
+                source={avatarUri ? { uri: avatarUri } : avatarStatic}
+                style={styles.avatar}
+              />
+            </View>
 
-          <View style={styles.infoUsuario}>
-            <Text style={[styles.nick, { color: theme.text }]}>{nickName}</Text>
-            <Text style={[styles.parrafo, { color: theme.text }]}>{ubicacion}</Text>
-          </View>
+            <View style={styles.infoUsuario}>
+              <Text style={[styles.nick, { color: theme.text }]}>{nickName}</Text>
+              <Text style={[styles.parrafo, { color: theme.text }]}>{ubicacion}</Text>
+            </View>
 
-          <TouchableOpacity
-            style={styles.botonEditarPerfilContainer}
-            onPress={() => setModalVisible(true)}
-          >
-            <Text style={styles.botonEditarPerfilTexto}>Perfil</Text>
-          </TouchableOpacity>
-        </View>
-
-        {/* ESTADÍSTICAS */}
-        <View style={styles.estadisticasContenedor}>
-          <Text style={[styles.seccionTitulo, { color: theme.text }]}>
-            Estadísticas
-          </Text>
-
-          <View style={styles.nivelesDisponibles}>
-            {NIVELES.map((n) => (
-              <Pressable key={n} onPress={() => setNivel(n)}>
-                <Text
-                  style={[
-                    styles.tituloDificultad,
-                    nivel === n && { opacity: 1 },
-                  ]}
-                >
-                  {n.toUpperCase()}
-                </Text>
-              </Pressable>
-            ))}
-          </View>
-
-          <View style={styles.tablaEstadisticas}>
-            <Text style={styles.celdaLabel}>
-              Partidas jugadas: {estadisticas.partidasJugadas}
-            </Text>
-            <Text style={styles.celdaLabel}>
-              Sin errores: {estadisticas.partidasSinErrores}
-            </Text>
-            <Text style={styles.celdaLabel}>
-              Porcentaje: {estadisticas.porcentajeSinErrores}%
-            </Text>
-            <Text style={styles.celdaLabel}>
-              Tiempo medio: {formatearMMSS(estadisticas.mediaTiemposPartidas)}
-            </Text>
-            <Text style={styles.celdaLabel}>
-              Mejor tiempo: {formatearMMSS(estadisticas.mejorTiempo)}
-            </Text>
-          </View>
-
-          <TouchableOpacity onPress={() => reseteoEstadisticas(nivel)}>
-            <LinearGradient
-              colors={['#FF9C52', '#FF6C22']}
-              style={styles.reinicioEstadisticas}
+            <TouchableOpacity
+              style={styles.botonEditarPerfilContainer}
+              onPress={() => setModalVisible(true)}
             >
-              <Text style={styles.textoReinicioEstadisticas}>
-                Reiniciar estadísticas
-              </Text>
-            </LinearGradient>
-          </TouchableOpacity>
-        </View>
+              <Text style={styles.botonEditarPerfilTexto}>Perfil</Text>
+            </TouchableOpacity>
+          </View>
 
+          {/* ESTADÍSTICAS */}
+          <View style={styles.estadisticasContenedor}>
+            <Text style={[styles.seccionTitulo, { color: theme.text }]}>
+              Estadísticas
+            </Text>
+
+            <View style={styles.nivelesDisponibles}>
+              {NIVELES.map((n) => (
+                <Pressable key={n} onPress={() => setNivel(n)}>
+                  <Text
+                    style={[
+                      styles.tituloDificultad,
+                      nivel === n && { opacity: 1 },
+                    ]}
+                  >
+                    {n.toUpperCase()}
+                  </Text>
+                </Pressable>
+              ))}
+            </View>
+
+            <View style={styles.tablaEstadisticas}>
+              <Text style={styles.celdaLabel}>
+                Partidas jugadas: {estadisticas.partidasJugadas}
+              </Text>
+              <Text style={styles.celdaLabel}>
+                Sin errores: {estadisticas.partidasSinErrores}
+              </Text>
+              <Text style={styles.celdaLabel}>
+                Porcentaje: {estadisticas.porcentajeSinErrores}%
+              </Text>
+              <Text style={styles.celdaLabel}>
+                Tiempo medio: {formatearMMSS(estadisticas.mediaTiemposPartidas)}
+              </Text>
+              <Text style={styles.celdaLabel}>
+                Mejor tiempo: {formatearMMSS(estadisticas.mejorTiempo)}
+              </Text>
+            </View>
+
+            <TouchableOpacity onPress={() => reseteoEstadisticas(nivel)}>
+              <LinearGradient
+                colors={['#FF9C52', '#FF6C22']}
+                style={styles.reinicioEstadisticas}
+              >
+                <Text style={styles.textoReinicioEstadisticas}>
+                  Reiniciar estadísticas
+                </Text>
+              </LinearGradient>
+            </TouchableOpacity>
+          </View>
+        </View>
+        
         {/* MODAL */}
         <Modal visible={modalVisible} transparent animationType="slide">
           <View style={styles.contenedorModal}>
@@ -405,6 +407,13 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     padding: 16,
     marginTop: 30,
+  },
+
+  pantalla: {
+    width: '100%',
+    maxWidth: 390,
+    paddingHorizontal: 16,
+    alignItems: 'center',
   },
 
   avatarContainer: {

@@ -13,8 +13,6 @@ import { Image } from 'expo-image';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { registrarSoloNick, isValidNick } from '../services/registrarSoloNick';
 
-import { MobileContainer } from '../components/layout/MobileContainer';
-
 const logo = require('../assets/imagenes/logo_circular_5.png');
 
 export function RegisterScreen() {
@@ -40,10 +38,7 @@ export function RegisterScreen() {
       if (e.message === 'nick_en_uso') {
         Alert.alert('Nick en uso', 'Elige otro nick, por favor.');
       } else {
-        Alert.alert(
-          'No se pudo registrar',
-          e?.message ?? 'Inténtalo de nuevo'
-        );
+        Alert.alert('No se pudo registrar', e?.message ?? 'Inténtalo de nuevo');
       }
       setErrorMessage(e?.message ?? 'Error');
     }
@@ -54,15 +49,12 @@ export function RegisterScreen() {
       style={styles.contenedorRegistro}
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}
     >
-      <MobileContainer>
+      
+      <View style={styles.pantalla}>
         <Image
           source={logo}
           style={styles.logo}
           contentFit="contain"
-          priority="low"
-          cachePolicy="disk"
-          placeholder="LKO2?U%2Tw=w]~RBVZRi"
-          transition={200}
         />
 
         <Text style={styles.title}>Desafío Aritmético</Text>
@@ -72,28 +64,26 @@ export function RegisterScreen() {
           <Text style={styles.errorText}>{errorMessage}</Text>
         )}
 
-        <View style={styles.formulario}>
-          <TextInput
-            placeholder="Pon tu nick"
-            placeholderTextColor="#9CA3AF"
-            autoCapitalize="none"
-            autoCorrect={false}
-            style={styles.input}
-            value={nick}
-            onChangeText={(t) => {
-              setNick(t);
-              setErrorMessage('');
-            }}
-            maxLength={20}
-            returnKeyType="done"
-            onSubmitEditing={handleRegister}
-          />
+        <TextInput
+          placeholder="Pon tu nick"
+          placeholderTextColor="#9CA3AF"
+          autoCapitalize="none"
+          autoCorrect={false}
+          style={styles.input}
+          value={nick}
+          onChangeText={(t) => {
+            setNick(t);
+            setErrorMessage('');
+          }}
+          maxLength={20}
+          returnKeyType="done"
+          onSubmitEditing={handleRegister}
+        />
 
-          <TouchableOpacity style={styles.button} onPress={handleRegister}>
-            <Text style={styles.buttonText}>Regístrate</Text>
-          </TouchableOpacity>
-        </View>
-      </MobileContainer>
+        <TouchableOpacity style={styles.button} onPress={handleRegister}>
+          <Text style={styles.buttonText}>Regístrate</Text>
+        </TouchableOpacity>
+      </View>
     </KeyboardAvoidingView>
   );
 }
@@ -102,44 +92,40 @@ const styles = StyleSheet.create({
   contenedorRegistro: {
     flex: 1,
     backgroundColor: '#1E3A8A',
-    alignItems: Platform.OS === 'web' ? 'center' : 'stretch',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 
-  mobileContainer: {
-    flex: 1,
+  pantalla: {
     width: '100%',
-    maxWidth: 420,
-    alignSelf: 'center',
-    paddingHorizontal: 24,
-    paddingTop: 80,
+    maxWidth: 390,
+    paddingHorizontal: 16,
+    alignItems: 'center',
   },
 
   logo: {
-    width: 170,
-    height: 170,
-    marginBottom: 12,
-    marginTop: 45,
+    width: 160,
+    height: 160,
+    marginBottom: 16,
   },
 
   title: {
     color: '#FFFFFF',
     fontSize: 24,
     fontWeight: 'bold',
+    textAlign: 'center',
   },
 
   slogan: {
     color: '#FFFFFF',
     fontSize: 14,
     marginTop: 4,
-  },
-
-  formulario: {
-    flex: 1,
-    paddingHorizontal: 24,
-    paddingTop: 25,
+    marginBottom: 24,
+    textAlign: 'center',
   },
 
   input: {
+    width: '100%',
     height: 48,
     backgroundColor: '#FFFFFF',
     borderRadius: 8,
@@ -151,6 +137,7 @@ const styles = StyleSheet.create({
   },
 
   button: {
+    width: '100%',
     height: 48,
     backgroundColor: '#FF8C42',
     borderRadius: 8,
