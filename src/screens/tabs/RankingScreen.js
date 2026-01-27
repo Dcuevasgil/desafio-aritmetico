@@ -10,16 +10,15 @@ import {
 import { LinearGradient } from 'expo-linear-gradient';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { collection, onSnapshot } from 'firebase/firestore';
-import { auth, db } from '../../config/firebase';
-import { useTheme } from '../../context/ContextoTematica';
+import { db } from '../../config/firebase';
+import { layout } from '../../estilos/baseStyles';
 
 export function RankingScreen() {
-  const { theme } = useTheme();
   const [usuarios, setUsuarios] = useState([]);
   const [cargando, setCargando] = useState(true);
 
   useEffect(() => {
-    const unsub = onSnapshot(collection(db, 'perfil'), (snap) => {
+    return onSnapshot(collection(db, 'perfil'), (snap) => {
       const lista = [];
       snap.forEach((d) =>
         lista.push({
@@ -32,13 +31,11 @@ export function RankingScreen() {
       setUsuarios(lista.slice(0, 10));
       setCargando(false);
     });
-
-    return unsub;
   }, []);
 
   if (cargando) {
     return (
-      <SafeAreaView style={styles.center}>
+      <SafeAreaView style={layout.contenedor}>
         <ActivityIndicator />
       </SafeAreaView>
     );
@@ -47,13 +44,13 @@ export function RankingScreen() {
   return (
     <>
       <StatusBar barStyle="light-content" />
-      <SafeAreaView style={styles.contenedor}>
+      <SafeAreaView style={[layout.contenedor, layout.paddingWeb]}>
         <LinearGradient
           colors={['#0B66E8', '#0B59D5', '#0A48BC']}
           style={StyleSheet.absoluteFillObject}
         />
 
-        <View style={styles.pantalla}>
+        <View style={layout.pantalla}>
           <Text style={styles.title}>Ranking</Text>
 
           <FlatList
@@ -75,14 +72,6 @@ export function RankingScreen() {
 }
 
 const styles = StyleSheet.create({
-  contenedor: { flex: 1 },
-  pantalla: {
-    width: '100%',
-    maxWidth: 390,
-    alignSelf: 'center',
-    padding: 16,
-  },
-  center: { flex: 1, justifyContent: 'center', alignItems: 'center' },
   title: { color: '#FFF', fontSize: 22, textAlign: 'center', marginBottom: 16 },
   item: {
     flexDirection: 'row',

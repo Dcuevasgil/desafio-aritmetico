@@ -276,13 +276,20 @@ export function PerfilScreen() {
         barStyle={theme.text === '#000000' ? 'dark-content' : 'light-content'}
       />
 
-      <SafeAreaView style={[styles.contenedor, { backgroundColor: theme.background }]}>
+      <SafeAreaView 
+        style={[
+          styles.contenedor,
+          layout.contenedor,
+          layout.paddingWeb,
+          { backgroundColor: theme.background }
+        ]}
+      >
         <LinearGradient
           colors={['#0B66E8', '#0B59D5', '#0A48BC']}
           style={styles.gradientFondo}
         />
 
-        <View style={styles.pantalla}>
+        <View style={layout.pantalla}>
           {/* CABECERA */}
           <View style={styles.cabecera}>
             <View style={[styles.avatarContainer, { backgroundColor: colorFondo }]}>

@@ -68,6 +68,8 @@ import { useTheme } from '../../context/ContextoTematica';
 
 import { actualizarExperienciaUsuario } from '../../config/sistema_xp';
 
+import { layout } from '../../estilos/baseStyles';
+
 /* ─────────── Constantes ─────────── */
 
 const opcionesAvatar = {
@@ -356,13 +358,20 @@ export function HomeScreen() {
         barStyle={theme.text === '#000000' ? 'dark-content' : 'light-content'}
       />
 
-      <SafeAreaView style={[styles.container, { backgroundColor: theme.background }]}>
+      <SafeAreaView 
+        style={[
+          styles.container,
+          layout.contenedor,
+          layout.paddingWeb, 
+          { backgroundColor: theme.background }
+        ]}
+      >
         <LinearGradient
           colors={['#0B66E8', '#0B59D5', '#0A48BC']}
           style={styles.gradientFondo}
         />
 
-        <View style={styles.pantalla}>
+        <View style={layout.pantalla}>
           {!nivel && (
             <>
               <TouchableOpacity
@@ -446,13 +455,6 @@ const styles = StyleSheet.create({
     padding: Platform.OS === 'web' ? 0 : 24,
   },
   gradientFondo: { ...StyleSheet.absoluteFillObject },
-
-  pantalla: {
-    width: '100%',
-    maxWidth: 390,
-    paddingHorizontal: 16,
-    alignItems: 'center',
-  },
   
   header: {
     flexDirection: 'row',
