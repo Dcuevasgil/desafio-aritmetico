@@ -1,8 +1,6 @@
 // MobileContainer.js
 import React from 'react';
-import { View, StyleSheet, Platform, Dimensions } from 'react-native';
-
-const { height } = Dimensions.get('window');
+import { View, StyleSheet, Platform } from 'react-native';
 
 export function MobileContainer({ children }) {
   if (Platform.OS !== 'web') {
@@ -21,16 +19,13 @@ export function MobileContainer({ children }) {
 const styles = StyleSheet.create({
   webWrapper: {
     flex: 1,
-    justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: '#0B66E8',
   },
 
   mobileFrame: {
     width: 390,
-    height: Math.min(height, 780),
-    borderRadius: 24,
-    overflow: 'hidden',
+    minHeight: '100%',
     backgroundColor: '#0B66E8',
   },
 });
