@@ -12,6 +12,8 @@ import {
   cancelarRecordatorioDiario,
 } from './src/services/notificationService';
 
+import { MobileContainer } from './src/components/layout/MobileContainer';
+
 import { ContextoTematicaProvider } from './src/context/ContextoTematica';
 import { RegisterScreen } from './src/screens/RegisterScreen';
 import NavegacionTabs from './src/navegacion/NavegacionTabs';
@@ -113,7 +115,13 @@ export default function App() {
   return (
     <ContextoTematicaProvider>
       <NavigationContainer>
-        {isInApp ? <AppStack /> : <AuthStack />}
+        {Platform.OS === 'web' ? (
+          <MobileContainer>
+            {isInApp ? <AppStack /> : <AuthStack />}
+          </MobileContainer>
+        ) : (
+          isInApp ? <AppStack /> : <AuthStack />
+        )}
       </NavigationContainer>
     </ContextoTematicaProvider>
   );

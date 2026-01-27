@@ -6,13 +6,11 @@ import {
   StatusBar,
   FlatList,
   ActivityIndicator,
-  Platform
+  Platform,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { collection, onSnapshot } from 'firebase/firestore';
-
-import { MobileContainer } from '../../components/layout/MobileContainer';
 
 import { useTheme } from '../../context/ContextoTematica';
 import { db, auth } from '../../config/firebase';
@@ -34,7 +32,7 @@ export function RankingScreen() {
           lista.push({
             id: d.id,
             displayName: data.displayName || 'Usuario',
-            xp: (data.xpTotal ?? data.experiencia ?? 0) || 0,
+            xp: data.xpTotal ?? data.experiencia ?? 0,
           });
         });
 
@@ -133,141 +131,74 @@ export function RankingScreen() {
           pointerEvents="none"
         />
 
-        {Platform.OS === 'web' ? (
-          <MobileContainer>
-            <Text style={[styles.title, { color: theme.text }]}>
-              Ranking de usuarios
-            </Text>
+        <Text style={[styles.title, { color: theme.text }]}>
+          Ranking de usuarios
+        </Text>
 
-            <FlatList
-              data={usuarios}
-              keyExtractor={(item) => item.id}
-              contentContainerStyle={{ paddingBottom: 24 }}
-              renderItem={({ item }) => (
-                <View
+        <FlatList
+          data={usuarios}
+          keyExtractor={(item) => item.id}
+          contentContainerStyle={{ paddingBottom: 32 }}
+          renderItem={({ item }) => (
+            <View
+              style={[
+                styles.item,
+                { backgroundColor: theme.sectionBg },
+              ]}
+            >
+              <Text
+                style={[
+                  styles.posicion,
+                  { color: theme.text },
+                  item.isCurrent && styles.currentHighlight,
+                ]}
+              >
+                {item.rank}.
+              </Text>
+
+              <Text
+                style={[
+                  styles.nombre,
+                  { color: theme.text },
+                  item.isCurrent && styles.currentHighlight,
+                ]}
+              >
+                {item.displayName}
+              </Text>
+
+              <Text
+                style={[
+                  styles.puntos,
+                  { color: theme.text },
+                  item.isCurrent && styles.currentHighlight,
+                ]}
+              >
+                {item.xp} 🎖️
+              </Text>
+            </View>
+          )}
+          ListFooterComponent={() => {
+            const ultimaFila = usuarios[usuarios.length - 1];
+            return ultimaFila?.isCurrent ? (
+              <View style={styles.contenedorPosicion}>
+                <Text
                   style={[
-                    styles.item,
-                    { backgroundColor: theme.sectionBg },
+                    styles.footerNote,
+                    { color: theme.text },
                   ]}
                 >
-                  <Text
-                    style={[
-                      styles.posicion,
-                      { color: theme.text },
-                      item.isCurrent && styles.currentHighlight,
-                    ]}
-                  >
-                    {item.rank}.
-                  </Text>
-
-                  <Text
-                    style={[
-                      styles.nombre,
-                      { color: theme.text },
-                      item.isCurrent && styles.currentHighlight,
-                    ]}
-                  >
-                    {item.displayName}
-                  </Text>
-
-                  <Text
-                    style={[
-                      styles.puntos,
-                      { color: theme.text },
-                      item.isCurrent && styles.currentHighlight,
-                    ]}
-                  >
-                    {item.xp} 🎖️
-                  </Text>
-                </View>
-              )}
-              ListFooterComponent={() => {
-                const ultimaFila = usuarios[usuarios.length - 1];
-                return ultimaFila?.isCurrent ? (
-                  <View style={styles.contenedorPosicion}>
-                    <Text
-                      style={[
-                        styles.footerNote,
-                        { color: theme.text },
-                      ]}
-                    >
-                      Tu posición actual
-                    </Text>
-                  </View>
-                ) : null;
-              }}
-            />
-          </MobileContainer>
-        ) : (
-          <>
-            <Text style={[styles.title, { color: theme.text }]}>
-              Ranking de usuarios
-            </Text>
-
-            <FlatList
-              data={usuarios}
-              keyExtractor={(item) => item.id}
-              contentContainerStyle={{ paddingBottom: 24 }}
-              renderItem={({ item }) => (
-                <View
-                  style={[
-                    styles.item,
-                    { backgroundColor: theme.sectionBg },
-                  ]}
-                >
-                  <Text
-                    style={[
-                      styles.posicion,
-                      { color: theme.text },
-                      item.isCurrent && styles.currentHighlight,
-                    ]}
-                  >
-                    {item.rank}.
-                  </Text>
-
-                  <Text
-                    style={[
-                      styles.nombre,
-                      { color: theme.text },
-                      item.isCurrent && styles.currentHighlight,
-                    ]}
-                  >
-                    {item.displayName}
-                  </Text>
-
-                  <Text
-                    style={[
-                      styles.puntos,
-                      { color: theme.text },
-                      item.isCurrent && styles.currentHighlight,
-                    ]}
-                  >
-                    {item.xp} 🎖️
-                  </Text>
-                </View>
-              )}
-              ListFooterComponent={() => {
-                const ultimaFila = usuarios[usuarios.length - 1];
-                return ultimaFila?.isCurrent ? (
-                  <View style={styles.contenedorPosicion}>
-                    <Text
-                      style={[
-                        styles.footerNote,
-                        { color: theme.text },
-                      ]}
-                    >
-                      Tu posición actual
-                    </Text>
-                  </View>
-                ) : null;
-              }}
-            />
-          </>
-        )}
+                  Tu posición actual
+                </Text>
+              </View>
+            ) : null;
+          }}
+        />
       </SafeAreaView>
     </>
   );
 }
+
+/* ───────── estilos ───────── */
 
 const styles = StyleSheet.create({
   container: {
@@ -327,10 +258,7 @@ const styles = StyleSheet.create({
   },
 
   contenedorPosicion: {
-    position: 'absolute',
-    top: 0,
-    left: 115,
-    zIndex: 1,
+    marginTop: 12,
   },
 
   footerNote: {

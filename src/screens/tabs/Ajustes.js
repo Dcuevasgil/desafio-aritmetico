@@ -4,7 +4,6 @@ import {
   Text,
   StyleSheet,
   StatusBar,
-  Platform,
   TouchableOpacity,
 } from 'react-native';
 
@@ -18,7 +17,6 @@ import { signOut } from 'firebase/auth';
 import { auth } from '../../config/firebase';
 
 import { useTheme } from '../../context/ContextoTematica';
-import { MobileContainer } from '../../components/layout/MobileContainer';
 
 import { SwitchModoOscuro } from '../../components/switches/SwitchModoOscuro';
 import { SwitchNotificaciones } from '../../components/switches/SwitchNotificaciones';
@@ -36,49 +34,6 @@ export function Ajustes() {
     }
   };
 
-  const Contenido = (
-    <>
-      <View style={styles.cabecera}>
-        <Ionicons
-          name="chevron-back-outline"
-          size={30}
-          color={theme.text}
-          style={styles.icono}
-          onPress={() => navigation.goBack()}
-        />
-        <Text style={[styles.titulo, { color: theme.text }]}>
-          Configuración
-        </Text>
-      </View>
-
-      <View
-        style={[
-          styles.configuraciones,
-          { backgroundColor: theme.sectionBg },
-        ]}
-      >
-        <SwitchModoOscuro label="Modo oscuro" />
-        <SwitchNotificaciones label="Notificaciones" />
-      </View>
-
-      <TouchableOpacity style={styles.accionBtn}>
-        <Text style={styles.accionText}>Ayuda</Text>
-      </TouchableOpacity>
-
-      <TouchableOpacity style={styles.accionBtn}>
-        <Text style={styles.accionText}>Privacidad</Text>
-      </TouchableOpacity>
-
-      <TouchableOpacity style={styles.accionBtn}>
-        <Text style={styles.accionText}>Términos y condiciones</Text>
-      </TouchableOpacity>
-
-      <TouchableOpacity style={styles.logoutBtn} onPress={handleLogout}>
-        <Text style={styles.logoutText}>Cerrar sesión</Text>
-      </TouchableOpacity>
-    </>
-  );
-
   return (
     <>
       <StatusBar
@@ -95,11 +50,44 @@ export function Ajustes() {
           pointerEvents="none"
         />
 
-        {Platform.OS === 'web' ? (
-          <MobileContainer>{Contenido}</MobileContainer>
-        ) : (
-          Contenido
-        )}
+        <View style={styles.cabecera}>
+          <Ionicons
+            name="chevron-back-outline"
+            size={30}
+            color={theme.text}
+            style={styles.icono}
+            onPress={() => navigation.goBack()}
+          />
+          <Text style={[styles.titulo, { color: theme.text }]}>
+            Configuración
+          </Text>
+        </View>
+
+        <View
+          style={[
+            styles.configuraciones,
+            { backgroundColor: theme.sectionBg },
+          ]}
+        >
+          <SwitchModoOscuro label="Modo oscuro" />
+          <SwitchNotificaciones label="Notificaciones" />
+        </View>
+
+        <TouchableOpacity style={styles.accionBtn}>
+          <Text style={styles.accionText}>Ayuda</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity style={styles.accionBtn}>
+          <Text style={styles.accionText}>Privacidad</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity style={styles.accionBtn}>
+          <Text style={styles.accionText}>Términos y condiciones</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity style={styles.logoutBtn} onPress={handleLogout}>
+          <Text style={styles.logoutText}>Cerrar sesión</Text>
+        </TouchableOpacity>
       </SafeAreaView>
     </>
   );
@@ -119,14 +107,14 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    paddingHorizontal: Platform.OS === 'web' ? 0 : 16,
+    paddingHorizontal: 16,
     paddingBottom: 8,
     marginTop: 16,
   },
 
   icono: {
     position: 'absolute',
-    left: Platform.OS === 'web' ? 0 : 16,
+    left: 16,
   },
 
   titulo: {
@@ -150,7 +138,7 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     paddingHorizontal: 24,
     borderRadius: 8,
-    marginHorizontal: Platform.OS === 'web' ? 0 : 24,
+    marginHorizontal: 24,
   },
 
   accionText: {
@@ -166,7 +154,7 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     paddingHorizontal: 24,
     borderRadius: 8,
-    marginHorizontal: Platform.OS === 'web' ? 0 : 24,
+    marginHorizontal: 24,
     marginBottom: 24,
   },
 

@@ -12,7 +12,6 @@ import {
   Alert,
   Keyboard,
   Pressable,
-  Platform
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -24,14 +23,12 @@ import { auth, db } from '../../config/firebase';
 import { updateProfile } from 'firebase/auth';
 import { doc, onSnapshot, setDoc, runTransaction } from 'firebase/firestore';
 
-import { MobileContainer } from '../../components/layout/MobileContainer';
-
 import { useTheme } from '../../context/ContextoTematica';
 import localizaciones from '../../json/localizaciones.json';
 
 import { CLOUDINARY_CLOUD_NAME, CLOUDINARY_UPLOAD_PRESET } from '@env';
 
-/* ───────────────── helpers ───────────────── */
+/* ───────── helpers ───────── */
 
 const opcionesAvatar = [
   require('../../assets/avatares/Avatar_1.png'),
@@ -93,7 +90,7 @@ const getStatsDeNivel = (niveles, nivelKey) => {
 const formatearMMSS = (s = 0) =>
   `${String(Math.floor(s / 60)).padStart(2, '0')}:${String(s % 60).padStart(2, '0')}`;
 
-/* ───────────────── componente ───────────────── */
+/* ───────── componente ───────── */
 
 export function PerfilScreen() {
   const navigation = useNavigation();
@@ -109,12 +106,11 @@ export function PerfilScreen() {
 
   const [listaLocalizaciones, setListaLocalizaciones] = useState([]);
   const [queryProv, setQueryProv] = useState('');
-  const inputProvRef = useRef(null);
 
   const [nivelesStats, setNivelesStats] = useState({});
   const [estadisticas, setEstadisticas] = useState(ESTADISTICAS_BASE);
-
   const [nivel, setNivel] = useState('facil');
+
   const [modalVisible, setModalVisible] = useState(false);
   const [saving, setSaving] = useState(false);
 
@@ -205,6 +201,7 @@ export function PerfilScreen() {
 
     try {
       const nick = nickName.trim();
+
       await runTransaction(db, async (tx) => {
         const ref = doc(db, 'nicks', nick);
         const snap = await tx.get(ref);
@@ -280,164 +277,85 @@ export function PerfilScreen() {
       />
 
       <SafeAreaView style={[styles.contenedor, { backgroundColor: theme.background }]}>
-  <LinearGradient
-    colors={['#0B66E8', '#0B59D5', '#0A48BC']}
-    style={styles.gradientFondo}
-  />
+        <LinearGradient
+          colors={['#0B66E8', '#0B59D5', '#0A48BC']}
+          style={styles.gradientFondo}
+        />
 
-  {Platform.OS === 'web' ? (
-    <MobileContainer>
-      {/* CABECERA */}
-      <View style={styles.cabecera}>
-        <View style={[styles.avatarContainer, { backgroundColor: colorFondo }]}>
-          <Image
-            source={avatarUri ? { uri: avatarUri } : avatarStatic}
-            style={styles.avatar}
-          />
-        </View>
+        {/* CABECERA */}
+        <View style={styles.cabecera}>
+          <View style={[styles.avatarContainer, { backgroundColor: colorFondo }]}>
+            <Image
+              source={avatarUri ? { uri: avatarUri } : avatarStatic}
+              style={styles.avatar}
+            />
+          </View>
 
-        <View style={styles.infoUsuario}>
-          <Text style={[styles.nick, { color: theme.text }]}>{nickName}</Text>
-          <Text style={[styles.parrafo, { color: theme.text }]}>{ubicacion}</Text>
-        </View>
+          <View style={styles.infoUsuario}>
+            <Text style={[styles.nick, { color: theme.text }]}>{nickName}</Text>
+            <Text style={[styles.parrafo, { color: theme.text }]}>{ubicacion}</Text>
+          </View>
 
-        <TouchableOpacity
-          style={styles.botonEditarPerfilContainer}
-          onPress={() => setModalVisible(true)}
-        >
-          <Text style={styles.botonEditarPerfilTexto}>Perfil</Text>
-        </TouchableOpacity>
-      </View>
-
-      {/* ESTADÍSTICAS */}
-      <View style={[styles.estadisticasContenedor, { backgroundColor: '#1C2B4A' }]}>
-        <Text style={[styles.seccionTitulo, { color: theme.text }]}>
-          Estadísticas
-        </Text>
-
-        <View style={styles.nivelesDisponibles}>
-          {NIVELES.map((n) => (
-            <Pressable key={n} onPress={() => setNivel(n)}>
-              <Text
-                style={[
-                  styles.tituloDificultad,
-                  nivel === n && { opacity: 1 },
-                ]}
-              >
-                {n.toUpperCase()}
-              </Text>
-            </Pressable>
-          ))}
-        </View>
-
-        <View style={styles.tablaEstadisticas}>
-          <Text style={styles.celdaLabel}>
-            Partidas jugadas: {estadisticas.partidasJugadas}
-          </Text>
-          <Text style={styles.celdaLabel}>
-            Sin errores: {estadisticas.partidasSinErrores}
-          </Text>
-          <Text style={styles.celdaLabel}>
-            Porcentaje: {estadisticas.porcentajeSinErrores}%
-          </Text>
-          <Text style={styles.celdaLabel}>
-            Tiempo medio: {formatearMMSS(estadisticas.mediaTiemposPartidas)}
-          </Text>
-          <Text style={styles.celdaLabel}>
-            Mejor tiempo: {formatearMMSS(estadisticas.mejorTiempo)}
-          </Text>
-        </View>
-
-        <TouchableOpacity onPress={() => reseteoEstadisticas(nivel)}>
-          <LinearGradient
-            colors={['#FF9C52', '#FF6C22']}
-            style={styles.reinicioEstadisticas}
+          <TouchableOpacity
+            style={styles.botonEditarPerfilContainer}
+            onPress={() => setModalVisible(true)}
           >
-            <Text style={styles.textoReinicioEstadisticas}>
-              Reiniciar estadísticas
+            <Text style={styles.botonEditarPerfilTexto}>Perfil</Text>
+          </TouchableOpacity>
+        </View>
+
+        {/* ESTADÍSTICAS */}
+        <View style={styles.estadisticasContenedor}>
+          <Text style={[styles.seccionTitulo, { color: theme.text }]}>
+            Estadísticas
+          </Text>
+
+          <View style={styles.nivelesDisponibles}>
+            {NIVELES.map((n) => (
+              <Pressable key={n} onPress={() => setNivel(n)}>
+                <Text
+                  style={[
+                    styles.tituloDificultad,
+                    nivel === n && { opacity: 1 },
+                  ]}
+                >
+                  {n.toUpperCase()}
+                </Text>
+              </Pressable>
+            ))}
+          </View>
+
+          <View style={styles.tablaEstadisticas}>
+            <Text style={styles.celdaLabel}>
+              Partidas jugadas: {estadisticas.partidasJugadas}
             </Text>
-          </LinearGradient>
-        </TouchableOpacity>
-      </View>
-    </MobileContainer>
-  ) : (
-    <>
-      {/* === MISMO CONTENIDO EN MÓVIL (sin MobileContainer) === */}
+            <Text style={styles.celdaLabel}>
+              Sin errores: {estadisticas.partidasSinErrores}
+            </Text>
+            <Text style={styles.celdaLabel}>
+              Porcentaje: {estadisticas.porcentajeSinErrores}%
+            </Text>
+            <Text style={styles.celdaLabel}>
+              Tiempo medio: {formatearMMSS(estadisticas.mediaTiemposPartidas)}
+            </Text>
+            <Text style={styles.celdaLabel}>
+              Mejor tiempo: {formatearMMSS(estadisticas.mejorTiempo)}
+            </Text>
+          </View>
 
-      <View style={styles.cabecera}>
-        <View style={[styles.avatarContainer, { backgroundColor: colorFondo }]}>
-          <Image
-            source={avatarUri ? { uri: avatarUri } : avatarStatic}
-            style={styles.avatar}
-          />
-        </View>
-
-        <View style={styles.infoUsuario}>
-          <Text style={[styles.nick, { color: theme.text }]}>{nickName}</Text>
-          <Text style={[styles.parrafo, { color: theme.text }]}>{ubicacion}</Text>
-        </View>
-
-        <TouchableOpacity
-          style={styles.botonEditarPerfilContainer}
-          onPress={() => setModalVisible(true)}
-        >
-          <Text style={styles.botonEditarPerfilTexto}>Perfil</Text>
-        </TouchableOpacity>
-      </View>
-
-      <View style={[styles.estadisticasContenedor, { backgroundColor: '#1C2B4A' }]}>
-        <Text style={[styles.seccionTitulo, { color: theme.text }]}>
-          Estadísticas
-        </Text>
-
-        <View style={styles.nivelesDisponibles}>
-          {NIVELES.map((n) => (
-            <Pressable key={n} onPress={() => setNivel(n)}>
-              <Text
-                style={[
-                  styles.tituloDificultad,
-                  nivel === n && { opacity: 1 },
-                ]}
-              >
-                {n.toUpperCase()}
+          <TouchableOpacity onPress={() => reseteoEstadisticas(nivel)}>
+            <LinearGradient
+              colors={['#FF9C52', '#FF6C22']}
+              style={styles.reinicioEstadisticas}
+            >
+              <Text style={styles.textoReinicioEstadisticas}>
+                Reiniciar estadísticas
               </Text>
-            </Pressable>
-          ))}
+            </LinearGradient>
+          </TouchableOpacity>
         </View>
 
-        <View style={styles.tablaEstadisticas}>
-          <Text style={styles.celdaLabel}>
-            Partidas jugadas: {estadisticas.partidasJugadas}
-          </Text>
-          <Text style={styles.celdaLabel}>
-            Sin errores: {estadisticas.partidasSinErrores}
-          </Text>
-          <Text style={styles.celdaLabel}>
-            Porcentaje: {estadisticas.porcentajeSinErrores}%
-          </Text>
-          <Text style={styles.celdaLabel}>
-            Tiempo medio: {formatearMMSS(estadisticas.mediaTiemposPartidas)}
-          </Text>
-          <Text style={styles.celdaLabel}>
-            Mejor tiempo: {formatearMMSS(estadisticas.mejorTiempo)}
-          </Text>
-        </View>
-
-        <TouchableOpacity onPress={() => reseteoEstadisticas(nivel)}>
-          <LinearGradient
-            colors={['#FF9C52', '#FF6C22']}
-            style={styles.reinicioEstadisticas}
-          >
-            <Text style={styles.textoReinicioEstadisticas}>
-              Reiniciar estadísticas
-            </Text>
-          </LinearGradient>
-        </TouchableOpacity>
-      </View>
-    </>
-  )}
-
-        {/* Modal edición */}
+        {/* MODAL */}
         <Modal visible={modalVisible} transparent animationType="slide">
           <View style={styles.contenedorModal}>
             <View style={styles.contenidoModal}>
@@ -476,18 +394,19 @@ export function PerfilScreen() {
   );
 }
 
-/* ───────────────── styles ───────────────── */
+/* ───────── styles ───────── */
 
 const styles = StyleSheet.create({
   contenedor: { flex: 1 },
   gradientFondo: { ...StyleSheet.absoluteFillObject },
+
   cabecera: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: Platform.OS === 'web' ? 'space-between' : 'flex-start',
     padding: 16,
     marginTop: 30,
   },
+
   avatarContainer: {
     width: 60,
     height: 60,
@@ -497,51 +416,68 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
+
   avatar: { width: 50, height: 50, borderRadius: 25 },
+
   infoUsuario: { flex: 1, marginLeft: 12 },
+
   nick: { fontSize: 18, fontWeight: 'bold' },
   parrafo: { fontSize: 14 },
+
   botonEditarPerfilContainer: {
     backgroundColor: '#FF8C42',
     padding: 8,
     borderRadius: 8,
   },
+
   botonEditarPerfilTexto: { color: '#FFF', fontWeight: 'bold' },
+
   estadisticasContenedor: {
     marginTop: 40,
-    marginHorizontal: Platform.OS === 'web' ? 0 : 16,
+    marginHorizontal: 16,
     borderRadius: 12,
     padding: 16,
+    backgroundColor: '#1C2B4A',
   },
+
   seccionTitulo: { fontSize: 20, fontWeight: 'bold', textAlign: 'center' },
+
   nivelesDisponibles: {
     flexDirection: 'row',
     justifyContent: 'space-around',
     marginVertical: 12,
   },
+
   tituloDificultad: { color: '#FFF', opacity: 0.6 },
+
   tablaEstadisticas: { marginVertical: 8 },
   celdaLabel: { color: '#FFF', marginVertical: 2 },
+
   reinicioEstadisticas: {
     marginTop: 16,
     padding: 12,
     borderRadius: 12,
     alignItems: 'center',
   },
+
   textoReinicioEstadisticas: { color: '#FFF', fontWeight: 'bold' },
+
   contenedorModal: {
     flex: 1,
     backgroundColor: 'rgba(0,0,0,0.5)',
     justifyContent: 'center',
     alignItems: 'center',
   },
+
   contenidoModal: {
     backgroundColor: '#1E3A8A',
     padding: 16,
     borderRadius: 12,
     width: '90%',
   },
+
   tituloModal: { color: '#FFF', fontSize: 18, fontWeight: 'bold' },
+
   input: {
     backgroundColor: 'rgba(255,255,255,0.15)',
     color: '#FFF',
@@ -549,7 +485,9 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     marginVertical: 8,
   },
+
   avatarSmall: { width: 50, height: 50, borderRadius: 25, marginRight: 8 },
+
   botonesModal: {
     flexDirection: 'row',
     justifyContent: 'space-between',

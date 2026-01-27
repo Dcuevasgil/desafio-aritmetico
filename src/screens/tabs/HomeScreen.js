@@ -65,7 +65,6 @@ import { auth, db } from '../../config/firebase';
 import { doc, onSnapshot } from 'firebase/firestore';
 
 import { useTheme } from '../../context/ContextoTematica';
-import { MobileContainer } from '../../components/layout/MobileContainer';
 
 import { actualizarExperienciaUsuario } from '../../config/sistema_xp';
 
@@ -363,170 +362,72 @@ export function HomeScreen() {
           style={styles.gradientFondo}
         />
 
-        {Platform.OS === 'web' ? (
-          <MobileContainer>
-            {!nivel && (
-              <>
-                <TouchableOpacity
-                  style={styles.header}
-                  onPress={() => navigation.navigate('Perfil')}
-                >
-                  <Image
-                    source={avatarUri ? { uri: avatarUri } : opcionesAvatar[avatarKey]}
-                    style={[styles.avatar, { backgroundColor: colorFondo }]}
-                  />
-                  <Text style={[styles.nick, { color: theme.text }]}>
-                    {displayName}
-                  </Text>
-                  <View style={styles.experienciaUsuario}>
-                    {loadingXP ? (
-                      <ActivityIndicator />
-                    ) : (
-                      <Text style={styles.numeroExperiencia}>
-                        ⭐ {Number.isFinite(xpTotal) ? xpTotal : 0}
-                      </Text>
-                    )}
-                  </View>
-                </TouchableOpacity>
-
-                <Image source={logo} style={styles.logo} />
-                <Text style={[styles.title, { color: theme.text }]}>
-                  Desafío Aritmético
-                </Text>
-
-                {Object.keys(LEVELS).map((lv) => (
-                  <TouchableOpacity key={lv} onPress={() => setNivel(lv)}>
-                    <LinearGradient
-                      colors={['#FFA142', '#FF6C22']}
-                      style={styles.levelButton}
-                    >
-                      <Text style={styles.levelText}>{lv}</Text>
-                    </LinearGradient>
-                  </TouchableOpacity>
-                ))}
-              </>
-            )}
-
-            {nivel && question && (
-              <View style={styles.content}>
-                <Text style={styles.question}>
-                  {question.a} {question.operacion} {question.b} = ?
-                </Text>
-
-                <View style={styles.cajaOpciones}>
-                  {opcionesRespuesta.map((op, i) => (
-                    <TouchableOpacity
-                      key={i}
-                      style={[
-                        styles.botonOpcion,
-                        opcionSeleccionada === op && styles.opcionSeleccionada,
-                      ]}
-                      onPress={() => elegirOpcion(op)}
-                    >
-                      <Text style={styles.textoOpcion}>{op}</Text>
-                    </TouchableOpacity>
-                  ))}
-                </View>
-
-                {estadoRespuesta && (
-                  <Text style={styles.feedbackText}>{mensajeRespuesta}</Text>
-                )}
-              </View>
-            )}
-          </MobileContainer>
-        ) : (
+        {!nivel && (
           <>
-            {!nivel && (
-              <>
-                <TouchableOpacity
-                  style={styles.header}
-                  onPress={() => navigation.navigate('Perfil')}
-                >
-                  <Image
-                    source={avatarUri ? { uri: avatarUri } : opcionesAvatar[avatarKey]}
-                    style={[styles.avatar, { backgroundColor: colorFondo }]}
-                  />
-                  <Text style={[styles.nick, { color: theme.text }]}>
-                    {displayName}
+            <TouchableOpacity
+              style={styles.header}
+              onPress={() => navigation.navigate('Perfil')}
+            >
+              <Image
+                source={avatarUri ? { uri: avatarUri } : opcionesAvatar[avatarKey]}
+                style={[styles.avatar, { backgroundColor: colorFondo }]}
+              />
+              <Text style={[styles.nick, { color: theme.text }]}>
+                {displayName}
+              </Text>
+              <View style={styles.experienciaUsuario}>
+                {loadingXP ? (
+                  <ActivityIndicator />
+                ) : (
+                  <Text style={styles.numeroExperiencia}>
+                    ⭐ {Number.isFinite(xpTotal) ? xpTotal : 0}
                   </Text>
-                  <View style={styles.experienciaUsuario}>
-                    {loadingXP ? (
-                      <ActivityIndicator />
-                    ) : (
-                      <Text style={styles.numeroExperiencia}>
-                        ⭐ {Number.isFinite(xpTotal) ? xpTotal : 0}
-                      </Text>
-                    )}
-                  </View>
-                </TouchableOpacity>
-
-                <Image source={logo} style={styles.logo} />
-                <Text style={[styles.title, { color: theme.text }]}>
-                  Desafío Aritmético
-                </Text>
-
-                {Object.keys(LEVELS).map((lv) => (
-                  <TouchableOpacity key={lv} onPress={() => setNivel(lv)}>
-                    <LinearGradient
-                      colors={['#FFA142', '#FF6C22']}
-                      style={styles.levelButton}
-                    >
-                      <Text style={styles.levelText}>{lv}</Text>
-                    </LinearGradient>
-                  </TouchableOpacity>
-                ))}
-              </>
-            )}
-
-            {nivel && question && (
-              <View style={styles.content}>
-                <Text style={styles.question}>
-                  {question.a} {question.operacion} {question.b} = ?
-                </Text>
-
-                <View style={styles.cajaOpciones}>
-                  {opcionesRespuesta.map((op, i) => (
-                    <TouchableOpacity
-                      key={i}
-                      style={[
-                        styles.botonOpcion,
-                        opcionSeleccionada === op && styles.opcionSeleccionada,
-                      ]}
-                      onPress={() => elegirOpcion(op)}
-                    >
-                      <Text style={styles.textoOpcion}>{op}</Text>
-                    </TouchableOpacity>
-                  ))}
-                </View>
-
-                {estadoRespuesta && (
-                  <Text style={styles.feedbackText}>{mensajeRespuesta}</Text>
                 )}
               </View>
-            )}
+            </TouchableOpacity>
+
+            <Image source={logo} style={styles.logo} />
+            <Text style={[styles.title, { color: theme.text }]}>
+              Desafío Aritmético
+            </Text>
+
+            {Object.keys(LEVELS).map((lv) => (
+              <TouchableOpacity key={lv} onPress={() => setNivel(lv)}>
+                <LinearGradient
+                  colors={['#FFA142', '#FF6C22']}
+                  style={styles.levelButton}
+                >
+                  <Text style={styles.levelText}>{lv}</Text>
+                </LinearGradient>
+              </TouchableOpacity>
+            ))}
           </>
         )}
 
-        {Platform.OS === 'web' && mostrarResumen && resumenPartida && (
-          <View style={styles.modalOverlay}>
-            <View style={styles.modalCard}>
-              <Text style={styles.modalTitle}>Partida finalizada</Text>
+        {nivel && question && (
+          <View style={styles.content}>
+            <Text style={styles.question}>
+              {question.a} {question.operacion} {question.b} = ?
+            </Text>
 
-              <Text>Aciertos: {resumenPartida.aciertos}/10</Text>
-              <Text>Fallos: {resumenPartida.errores}/10</Text>
-              <Text>Tiempo: {formatearMMSS(resumenPartida.tiempo)}</Text>
-              <Text>+{resumenPartida.xp} XP</Text>
-
-              <TouchableOpacity
-                onPress={() => {
-                  setMostrarResumen(false);
-                  setResumenPartida(null);
-                  setNivel(null);
-                }}
-              >
-                <Text style={styles.modalButton}>OK</Text>
-              </TouchableOpacity>
+            <View style={styles.cajaOpciones}>
+              {opcionesRespuesta.map((op, i) => (
+                <TouchableOpacity
+                  key={i}
+                  style={[
+                    styles.botonOpcion,
+                    opcionSeleccionada === op && styles.opcionSeleccionada,
+                  ]}
+                  onPress={() => elegirOpcion(op)}
+                >
+                  <Text style={styles.textoOpcion}>{op}</Text>
+                </TouchableOpacity>
+              ))}
             </View>
+
+            {estadoRespuesta && (
+              <Text style={styles.feedbackText}>{mensajeRespuesta}</Text>
+            )}
           </View>
         )}
       </SafeAreaView>
