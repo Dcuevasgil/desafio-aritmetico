@@ -54,7 +54,8 @@ import {
   Image,
   StatusBar,
   ActivityIndicator,
-  Platform
+  Platform,
+  Modal
 } from 'react-native';
 
 import { LinearGradient } from 'expo-linear-gradient';
@@ -62,7 +63,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 
 import { auth, db } from '../../config/firebase';
-import { doc, onSnapshot } from 'firebase/firestore';
+import { doc, onSnapshot, runTransaction } from 'firebase/firestore';
 
 import { useTheme } from '../../context/ContextoTematica';
 
@@ -302,50 +303,115 @@ export function HomeScreen() {
     finalizarRespuesta(op === question.respuesta);
   };
 
+  const ESTADISTICAS_BASE = {
+    partidasJugadas: 0,
+    partidasSinErrores: 0,
+    porcentajeSinErrores: 0,
+    mediaTiemposPartidas: 0,
+    mejorTiempo: 0,
+  };
+
   const next = async () => {
-    try {
-      const nivelN = normalizarNivel(nivel);
-      const tiempoRondaMax = LEVELS[nivelN].tiempo;
+    const nivelN = normalizarNivel(nivel);
+    const tiempoRondaMax = LEVELS[nivelN].tiempo;
 
-      const gastado = Math.max(0, tiempoRondaMax - timeLeft);
-      partidaRef.current.totalTime += gastado;
+    const gastado = Math.max(0, tiempoRondaMax - timeLeft);
+    partidaRef.current.totalTime += gastado;
 
-      const answered =
-        partidaRef.current.correct + partidaRef.current.wrong;
+    const answered = partidaRef.current.correct + partidaRef.current.wrong;
 
-      if (answered < 10) {
-        startRound();
-        return;
-      }
-
-      clearInterval(timerRef.current);
-      setQuestion(null);
-      setEstadoRespuesta(null);
-
-      const partida = {
-        nivel: nivelN,
-        aciertos: partidaRef.current.correct,
-        errores: partidaRef.current.wrong,
-        tiempoTotalSegundos: partidaRef.current.totalTime,
-      };
-
-      const resultadoXP = await actualizarExperienciaUsuario(user.uid, partida);
-      const xp = resultadoXP.xp;
-
-      setXpTotal((prev) => prev + xp);
-
-      setResumenPartida({
-        aciertos: partida.aciertos,
-        errores: partida.errores,
-        tiempo: partida.tiempoTotalSegundos,
-        xp,
-      });
-
-      setMostrarResumen(true);
-    } catch (err) {
-      console.error('❌ Error al finalizar partida:', err);
-      alert('Error al guardar la partida');
+    // ───── sigue la partida ─────
+    if (answered < 10) {
+      startRound();
+      return;
     }
+
+    // ───── final de partida ─────
+    clearInterval(timerRef.current);
+    setQuestion(null);
+    setEstadoRespuesta(null);
+
+    const partida = {
+      nivel: nivelN,
+      aciertos: partidaRef.current.correct,
+      errores: partidaRef.current.wrong,
+      tiempoTotalSegundos: partidaRef.current.totalTime,
+    };
+
+    // 1) ───── guardar estadísticas (aislado) ─────
+    try {
+      await runTransaction(db, async (tx) => {
+        const ref = doc(db, 'perfil', user.uid);
+        const snap = await tx.get(ref);
+
+        const data = snap.exists() ? snap.data() : {};
+        const niveles = data.estadisticas?.niveles ?? {};
+
+        // OJO: aseguramos base + prev
+        const prev = { ...ESTADISTICAS_BASE, ...(niveles[nivelN] ?? {}) };
+
+        const partidasJugadas = (prev.partidasJugadas ?? 0) + 1;
+        const partidasSinErrores =
+          (prev.partidasSinErrores ?? 0) + (partida.errores === 0 ? 1 : 0);
+
+        const mediaTiemposPartidas = Math.round(
+          ((prev.mediaTiemposPartidas ?? 0) * (prev.partidasJugadas ?? 0) +
+            partida.tiempoTotalSegundos) / partidasJugadas
+        );
+
+        const mejorTiempo =
+          !prev.mejorTiempo || prev.mejorTiempo === 0
+            ? partida.tiempoTotalSegundos
+            : Math.min(prev.mejorTiempo, partida.tiempoTotalSegundos);
+
+        const porcentajeSinErrores = Math.round(
+          (partidasSinErrores / partidasJugadas) * 100
+        );
+
+        tx.set(
+          ref,
+          {
+            estadisticas: {
+              niveles: {
+                ...niveles,
+                [nivelN]: {
+                  partidasJugadas,
+                  partidasSinErrores,
+                  porcentajeSinErrores,
+                  mediaTiemposPartidas,
+                  mejorTiempo,
+                },
+              },
+            },
+          },
+          { merge: true }
+        );
+      });
+    } catch (err) {
+      console.error('❌ ERROR GUARDANDO ESTADÍSTICAS:', err);
+      alert(`Error guardando estadísticas: ${err?.message ?? String(err)}`);
+      return; // cortamos aquí para no seguir
+    }
+
+    // 2) ───── XP (aislado para que si falla no rompa todo) ─────
+    let xp = 0;
+    try {
+      const resultadoXP = await actualizarExperienciaUsuario(user.uid, partida);
+      xp = Number(resultadoXP?.xp ?? 0);
+      setXpTotal((prev) => prev + xp);
+    } catch (err) {
+      console.error('⚠️ ERROR ACTUALIZANDO XP:', err);
+      // NO hacemos return: la partida y stats ya están guardadas
+    }
+
+    // ───── resumen ─────
+    setResumenPartida({
+      aciertos: partida.aciertos,
+      errores: partida.errores,
+      tiempo: partida.tiempoTotalSegundos,
+      xp,
+    });
+    setMostrarResumen(true);
   };
 
 
@@ -441,6 +507,34 @@ export function HomeScreen() {
             </View>
           )}
         </View>
+
+        {/* ─────────── MODAL RESUMEN PARTIDA ─────────── */}
+        <Modal
+          visible={mostrarResumen}
+          transparent
+          animationType="fade"
+          onRequestClose={() => setMostrarResumen(false)}
+        >
+          <View style={styles.modalOverlay}>
+            <View style={styles.modalCard}>
+              <Text style={styles.modalTitle}>Resumen de la partida</Text>
+
+              <Text>Aciertos: {resumenPartida?.aciertos}</Text>
+              <Text>Errores: {resumenPartida?.errores}</Text>
+              <Text>Tiempo: {formatearMMSS(resumenPartida?.tiempo)}</Text>
+              <Text>XP ganada: ⭐ {resumenPartida?.xp}</Text>
+
+              <TouchableOpacity
+                onPress={() => {
+                  setMostrarResumen(false);
+                  setNivel(null); // volver a home
+                }}
+              >
+                <Text style={styles.modalButton}>Aceptar</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </Modal>
         
       </SafeAreaView>
     </>
