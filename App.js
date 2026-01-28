@@ -1,4 +1,7 @@
 import React, { useState, useEffect } from 'react';
+import { 
+  Platform,
+} from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import AsyncStorage from '@react-native-async-storage/async-storage';

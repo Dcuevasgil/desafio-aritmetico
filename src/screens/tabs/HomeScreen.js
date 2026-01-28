@@ -498,6 +498,10 @@ export function HomeScreen() {
 
           {nivel && question && (
             <View style={styles.content}>
+              <Text style={styles.tiempo}>
+                ⏱ {timeLeft}s
+              </Text>
+      
               <Text style={styles.question}>
                 {question.a} {question.operacion} {question.b} = ?
               </Text>
@@ -606,35 +610,46 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
 
-  content: { alignItems: 'center' },
+  content: {},
+
+  tiempo: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: '#FFFFFF',
+    marginTop: 8,
+    marginBottom: 8,
+    textAlign: 'center',
+  },
 
   question: {
     fontSize: 40,
     fontWeight: '600',
     marginVertical: 24,
+    textAlign: 'center',
   },
 
   cajaOpciones: {
     width: '100%',
-    maxWidth: 620,
+    maxWidth: 360,
     alignSelf: 'center',
     flexDirection: 'row',
     flexWrap: 'wrap',
     justifyContent: 'space-between',
-    marginBottom: 20,
   },
 
   botonOpcion: {
-    width: 240,          // 🔒 fijo (2 columnas perfectas)
-    height: 130,
-    borderRadius: 16,
+    width: '48%',
+    height: Platform.OS === 'web' ? 96 : 88,
+    borderRadius: 14,
     backgroundColor: '#FF8C42',
     alignItems: 'center',
     justifyContent: 'center',
+
+    marginBottom: 8, // ⬅️ CONTROLA EL GAP VERTICAL AQUÍ
   },
 
   textoOpcion: {
-    fontSize: 34,
+    fontSize: 28,
     fontWeight: '700',
     color: '#111827',
   },
