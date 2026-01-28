@@ -61,7 +61,7 @@ export function RankingScreen() {
                 <Text style={styles.text}>
                   {index + 1}. {item.displayName}
                 </Text>
-                <Text style={styles.text}>{item.xp}</Text>
+                <Text style={styles.text}>{Number.isFinite(item.xp) ? item.xp : 0}</Text>
               </View>
             )}
           />
