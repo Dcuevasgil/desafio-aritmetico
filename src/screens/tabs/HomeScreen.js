@@ -125,6 +125,7 @@ export function HomeScreen() {
   const [avatarKey, setAvatarKey] = useState('Avatar_1.png');
   const [avatarUri, setAvatarUri] = useState(null);
   const [colorFondo, setColorFondo] = useState(opcionesColorFondo[0]);
+  const [colorAro, setColorAro] = useState('#FFFFFF');
 
   const [mostrarResumen, setMostrarResumen] = useState(false);
   const [resumenPartida, setResumenPartida] = useState(null);
@@ -155,25 +156,34 @@ export function HomeScreen() {
   });
 
   useEffect(() => {
-    if (!user) return;
+    if (!user) {
+      setXpTotal(0);
+      setLoadingXP(false);
+      return;
+    }
 
     const ref = doc(db, 'perfil', user.uid);
+
     const unsub = onSnapshot(ref, (snap) => {
-      if (!snap.exists()) return;
-      const d = snap.data();
+      if (snap.exists()) {
+        const datosUsuario = snap.data();
 
-      setDisplayName(d.displayName || 'Usuario');
-      setAvatarKey(d.avatar || 'Avatar_1.png');
-      setAvatarUri(d.photoURL || null);
-      setColorFondo(d.colorFondo || opcionesColorFondo[0]);
+        setDisplayName(datosUsuario.displayName || 'Usuario');
+        setAvatarKey(datosUsuario.avatar || 'Avatar_1.png');
+        setAvatarUri(datosUsuario.photoURL || null);
+        setColorFondo(datosUsuario.colorFondo || opcionesColorFondo[0]);
+        setColorAro(datosUsuario.colorAro || '#FFFFFF');
 
-      // ✅ SOLO leer XP
-      const xp = Number(d.xpTotal ?? 0);
-      setXpTotal(xp);
+        const xp = Number(datosUsuario.xpTotal ?? 0);
+        setXpTotal(xp);
+      } else {
+        setXpTotal(0);
+      }
+
       setLoadingXP(false);
     });
 
-    return unsub;
+    return () => unsub();
   }, [user]);
 
   useFocusEffect(
@@ -446,7 +456,13 @@ export function HomeScreen() {
               >
                 <Image
                   source={avatarUri ? { uri: avatarUri } : opcionesAvatar[avatarKey]}
-                  style={[styles.avatar, { backgroundColor: colorFondo }]}
+                  style={[
+                    styles.avatar, 
+                    { 
+                      backgroundColor: colorFondo,
+                      borderColor: colorAro
+                    }
+                  ]}
                 />
                 <Text style={[styles.nick, { color: theme.text }]}>
                   {displayName}
@@ -561,7 +577,6 @@ const styles = StyleSheet.create({
     height: 36,
     borderRadius: 18,
     borderWidth: 2,
-    borderColor: '#FFF',
   },
 
   nick: { marginLeft: 12, fontSize: 16, fontWeight: '600' },
