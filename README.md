@@ -1,4 +1,4 @@
-# 🧠 Desafío Aritmético
+# Desafío Aritmético
 
 Aplicación multiplataforma desarrollada con **Expo + React Native**, enfocada a mejorar la agilidad mental mediante operaciones matemáticas, con sistema de ranking, perfiles y persistencia de datos en Firebase.
 
@@ -6,14 +6,14 @@ El proyecto cuenta con **versión web desplegada en Vercel**.
 
 ---
 
-## 🚀 Demo
+## Demo
 
-🔗 **Aplicación en producción:**  
-👉 https://desafio-aritmetico-ja6n.vercel.app/
+**Aplicación en producción:**  
+https://desafio-aritmetico-ja6n.vercel.app/
 
 ---
 
-## 🛠️ Tecnologías utilizadas
+## Tecnologías utilizadas
 
 ### Frontend
 - React Native
@@ -30,7 +30,7 @@ El proyecto cuenta con **versión web desplegada en Vercel**.
 
 ---
 
-## 📱 Funcionalidades principales
+## Funcionalidades principales
 
 - Registro de usuarios
 - Sistema de nicks únicos
@@ -42,7 +42,7 @@ El proyecto cuenta con **versión web desplegada en Vercel**.
 
 ---
 
-## 📁 Estructura del proyecto
+## Estructura del proyecto
 
 ```bash
 DESAFIO-ARITMETICO/
@@ -77,7 +77,7 @@ DESAFIO-ARITMETICO/
 
 ---
 
-## ⚙️ Variables de entorno
+## Variables de entorno
 
 El proyecto utiliza variables de entorno para Firebase y Cloudinary.
 
@@ -103,15 +103,15 @@ EXPO_PUBLIC_FIREBASE_MEASUREMENT_ID=xxxx
 
 ---
 
-## 🧪 Estado del proyecto
+## Estado del proyecto
 
-🟢 Activo
+Activo
 El proyecto se encuentra funcional y desplegado.
 Se seguirán implementando mejoras y nuevas funcionalidades.
 
 ---
 
-## 📌 Próximas mejoras
+## Próximas mejoras
 
 - ☐ Sistema de notificaciones push bien hecho
 
@@ -129,16 +129,16 @@ Se seguirán implementando mejoras y nuevas funcionalidades.
 
 ---
 
-## 👨‍💻 Autor
+## Autor
 
 David Cuevas Gil
 Estudiante de Desarrollo de Aplicaciones Web (DAW)
 
-📌 Proyecto personal con enfoque formativo y profesional.
+Proyecto personal con enfoque formativo y profesional.
 
 ---
 
-## 📝 Licencia
+## Licencia
 
 Este proyecto se distribuye bajo la licencia MIT.  
 Consulta el archivo LICENSE para más información.
