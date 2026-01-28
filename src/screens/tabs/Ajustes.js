@@ -26,11 +26,6 @@ export function Ajustes() {
 
   const [notificacionesActivas, setNotificacionesActivas] = useState(false);
 
-  const logout = async () => {
-    await signOut(auth);
-    await AsyncStorage.removeItem('@nick');
-  };
-
   return (
     <>
       <StatusBar barStyle="light-content" />
@@ -70,13 +65,6 @@ export function Ajustes() {
 
           <TouchableOpacity style={styles.btn}>
             <Text style={styles.btnText}>Privacidad</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            style={[styles.btn, styles.logout]}
-            onPress={logout}
-          >
-            <Text style={styles.btnText}>Cerrar sesión</Text>
           </TouchableOpacity>
         </View>
       </SafeAreaView>
